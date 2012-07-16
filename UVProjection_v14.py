@@ -25,19 +25,11 @@ from bpy.props import *
 
 bpy.types.Scene.IBPath = StringProperty(name="", attr="custompath", description="Base Image Path", maxlen= 1024, default="")
 
-def modificar_textura_default():
-    #configuro la imagen por default para poder usar el loader de imagenes:
-    #textura = bpy.data.textures[0]
-    textura = bpy.data.scenes.data.textures['Tex']
-    #textura = bpy.data.textures['Tex']
-    #text = D.textures[0]
-    #tex = D.objects[1].active_material.texture_slots[0].texture
-    textura.type = 'IMAGE'
-    return textura
-
-textura = modificar_textura_default()
-
 # Botones ############################################:
+
+# el comodin contiene la imagen actual del loader.
+comodin = bpy.data.textures.new(type='IMAGE', name='comodin')
+
 
 # Menu in toolprops region
 class Botones(bpy.types.Panel):
@@ -45,11 +37,7 @@ class Botones(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     #bl_region_type = "TOOL_PROPS"
     bl_region_type = "TOOLS"
-    
-    # desde aqui si puede cambiar el type pero luego desde draw usando self la primera vez va bien pero 
-    # si creas una escena nueva peta :S 
-    #textura = modificar_textura_default()
-    
+
     def draw(self, context):
         layout = self.layout
         #layout.label("hola mundo")
@@ -60,11 +48,10 @@ class Botones(bpy.types.Panel):
         #col.operator("object.custom_path")
         #col.prop(context.scene,"IBPath")
         
-        # le vuelvo a decir quien es la imagen por default por que parece que no la pillaba...
-        textura = bpy.data.textures['Tex']
-        #col.template_image(self.textura, "image", self.textura.image_user) #<-- uso la imagen por default para que se despliegue el loader
-        col.template_image(textura, "image", textura.image_user) #<-- uso la imagen por default para que se despliegue el loader
-         
+        comodin = bpy.data.textures[0]
+        
+        col.template_image(comodin, "image", comodin.image_user)
+        
         #col.operator("ol.ol", text='(Only) load image to blender')
         col.operator("toselected.toselected", text='To Selected')
         col.operator("mod.mod", text='To ALL') 
@@ -200,12 +187,12 @@ def proyectorcillo():
         
         bpy.ops.object.parent_set(type='OBJECT')
         bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-        #bpy.ops.object.select_name(name=emp.name, extend=False) # <--- OLD
+       #bpy.ops.object.select_name(name=emp.name, extend=False) # <--- OLD
         myobject = bpy.data.objects[str(emp.name)]
         myobject.select = True
             
         
-    if 'Locator' not in bpy.data.objects:	
+    if 'Locator' not in bpy.data.objects:    
         bpy.ops.object.add(type='EMPTY', view_align=False, enter_editmode=False, location=(0, 0, 0), rotation=(0, 0, 0), layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
         emp = bpy.context.active_object  # obteniendo objeto activo
         emp.name = "Locator"
