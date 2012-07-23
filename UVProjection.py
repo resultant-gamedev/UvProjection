@@ -15,7 +15,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 '''
-
 # Release date: 23/07/2012
 # format date: DD/MM/YY
 
