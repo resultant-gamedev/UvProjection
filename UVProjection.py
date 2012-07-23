@@ -47,7 +47,7 @@ comodin = bpy.data.textures.new(type='IMAGE', name='comodin')
 
 # Menu in toolprops region
 class Botones_UVProjection(bpy.types.Panel):
-    bl_label = "Automatic UVProjection v14"
+    bl_label = "Automatic UVProjection v15"
     bl_space_type = "VIEW_3D"
     #bl_region_type = "TOOL_PROPS"
     bl_region_type = "TOOLS"
