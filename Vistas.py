@@ -1,0 +1,17 @@
+import bpy
+
+class Vistas(object):
+
+    def __init__(self, nada = None):
+        self.nada = None
+
+    def vision(self):
+            # Poniendo todos los viewports comunes en modo textured:
+            bpy.context.blend_data.screens[0].areas[4].spaces[0].viewport_shade = 'TEXTURED' # vista animation a textured
+            bpy.context.blend_data.screens[2].areas[4].spaces[0].viewport_shade = 'TEXTURED' # vista default a textured
+            bpy.context.blend_data.screens[4].areas[2].spaces[0].viewport_shade = 'TEXTURED' # vista scripting a textured
+            #bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+            bpy.data.scenes['Scene'].game_settings.material_mode = 'GLSL'
+            # ponemos todas las imagenes en premultiply:
+            for i in bpy.data.images[:]:
+                bpy.data.images[i.name].use_premultiply = True
