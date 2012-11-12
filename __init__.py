@@ -22,11 +22,11 @@ bl_info = {
     "version": (1, 6),
     "blender": (2, 63, 0),
     "api": 31236,
-    "location": "View3D > Add > Mesh",
+    "location": "",
     "warning": "",
     "wiki_url": "",
     "tracker_url": "",
-    "category": "Add Mesh"}
+    "category": ""}
 
 #import os
 #print( str( os.getcwd() ) )
@@ -102,6 +102,7 @@ class Botones_UVProjection(bpy.types.Panel):
             comodin = bpy.data.textures[0]
             col.template_image(comodin, "image", comodin.image_user)
 
+        ''' # Esto lo dejo para futuras versiones  :)
         # listado de objetos en desplegable: en concreto del objeto activo:
         #col.prop(context.scene.objects, "active", text="Proyector? :")
         
@@ -115,6 +116,7 @@ class Botones_UVProjection(bpy.types.Panel):
         # para cambiar el nombre real de la camara:
         # bpy.data.cameras['Camera.001'].name = "jojo"
         # bpy.context.scene.camera.data.name = "grr"
+        '''
 
         #col.operator("ol.ol", text='(Only) load image to blender')
         col.operator("toselected.toselected", text='To Selected')
