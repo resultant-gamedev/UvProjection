@@ -33,7 +33,8 @@ bl_info = {
 #C:\Program Files\Blender Foundation\blender-2.64-RC2-windows64
 
 import sys
-RUTA="C:/Users/tux/AppData/Roaming/Blender Foundation/Blender/2.63/scripts/addons/UVProjection"
+#RUTA="C:/Users/tux/AppData/Roaming/Blender Foundation/Blender/2.63/scripts/addons/UVProjection"
+RUTA="/home/zenx/Blender/blender-2.64a-linux-glibc27-x86_64/2.64/scripts/addons/uvprojection"
 sys.path.append(RUTA)
 
 import bpy
