@@ -31,13 +31,22 @@ bl_info = {
 #import os
 #print( str( os.getcwd() ) )
 #C:\Program Files\Blender Foundation\blender-2.64-RC2-windows64
+#import os, sys
+import bpy
+import os, sys
 
-import sys
 #RUTA="C:/Users/tux/AppData/Roaming/Blender Foundation/Blender/2.63/scripts/addons/UVProjection"
-RUTA="/home/zenx/Blender/blender-2.64a-linux-glibc27-x86_64/2.64/scripts/addons/uvprojection"
+#RUTA="/home/zenx/Blender/blender-2.64a-linux-glibc27-x86_64/2.64/scripts/addons/uvprojection"
+
+FOLDER_NAME="uvprojection"
+
+if 'addons' in os.path.sys.path[1]:
+    RUTA = os.path.sys.path[1]+"/"+FOLDER_NAME
+else:
+    RUTA = os.path.sys.path[0]+"/"+FOLDER_NAME
+
 sys.path.append(RUTA)
 
-import bpy
 from Vistas import *
 from Unwrap import *
 from Uvmod import *
