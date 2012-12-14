@@ -1,45 +1,59 @@
 import bpy
 
-def uwap_cn_nombre(): 
-    # mapas uv
-    slots_uvs = bpy.context.object.data.uv_textures
-
-    # obteniendo los mapas uv existentes:
-    muvex = []
-    for i in range(len(slots_uvs)):
-        muvex.append(slots_uvs[i].name)
-
-    numero_slots = len(slots_uvs)
-    
-    # hacemos backup de todo lo que no es un backups previo ni uvprojection:
-    for i in range(numero_slots):
-        # chekeo backup previo (si da 0 es que hay coincidencias):
-        if slots_uvs[i].name.find('bkup_') != 0 and slots_uvs[i].name != 'uvprojection':
-            slots_uvs[i].name = "bkup_" + slots_uvs[i].name
-
-    # si solo tiene un backup tendremos que agregar un nuevo slot:
-    for i in range(numero_slots):
-        # chekeo backup previo (si da 0 es que hay coincidencias):
-        if slots_uvs[i].name.find('bkup_') == 0 and numero_slots == 1:
-            bpy.ops.mesh.uv_texture_add() # agregando slot de mapa uv (por defecto de nombre UVMap)
-            bpy.ops.object.mode_set(mode='EDIT')
-            bpy.ops.uv.unwrap(method='ANGLE_BASED', fill_holes=True, \
-            correct_aspect=True,use_subsurf_data=False, uv_subsurf_level=6)
-            bpy.ops.object.mode_set(mode='OBJECT')
-    
-    # si no tiene nada:
-    if numero_slots < 1: # si no hay algun mapa uv
-        bpy.ops.object.mode_set(mode='EDIT')
-        bpy.ops.mesh.uv_texture_add() # agregando slot de mapa uv (por defecto de nombre UVMap)
-        bpy.ops.uv.unwrap(method='ANGLE_BASED', fill_holes=True, \
-        correct_aspect=True,use_subsurf_data=False, uv_subsurf_level=6)
-        bpy.ops.object.mode_set(mode='OBJECT')
-        
+def crear_slot():
+    bpy.ops.object.mode_set(mode='EDIT')
+    bpy.ops.mesh.uv_texture_add() # agregando slot de mapa uv (por defecto de nombre UVMap)
+    bpy.ops.uv.unwrap(method='ANGLE_BASED', fill_holes=True, \
+    correct_aspect=True,use_subsurf_data=False, uv_subsurf_level=6)
+    bpy.ops.object.mode_set(mode='OBJECT')
     try:
-        # renombrar mapa uv
-        bpy.context.object.data.uv_textures['UVMap'].name = "uvprojection"
+        bpy.context.object.data.uv_textures['UVMap'].name = "uvprojection" # renombrado
+        bpy.data.meshes[bpy.context.active_object.data.name].uv_textures["uvprojection"].active_render = True 
     except:
         pass
+
+# mapas uv
+def uwap_cn_nombre(): 
+
+    slots_uvs = bpy.context.object.data.uv_textures
+    numero_slots = len(slots_uvs)
+
+    slots_detectados = [] #<-- los backups y uvprojections
+    slots_neutros = [] #<-- el resto
+    
+    if numero_slots == 0:
+        crear_slot()        
+    else:
+        
+        for i in range(numero_slots):
+            if slots_uvs[i].name.find('bkup_') == 0 or slots_uvs[i].name == 'uvprojection':
+                slots_detectados.append(slots_uvs[i])
+            else:            
+                slots_neutros.append(slots_uvs[i])
+        
+        # limpiando lista de repetidos:
+        def rmRepetidos(listado):
+            listado = list(set(listado)) # elimina duplicados
+            return listado
+        
+        # limpiando lista de repetidos:
+        slots_neutros = rmRepetidos(slots_neutros)
+
+        lslots_detectados = len(slots_detectados)  #<-- los backups y uvprojections
+        lslots_neutros = len(slots_neutros) #<-- el resto
+
+        if lslots_detectados == numero_slots:
+            if slots_uvs[i].name.find('uvprojection') < 0:
+                crear_slot()
+
+        # creando backups:
+        for i in range(len(slots_neutros)):
+            if slots_uvs[i].name not in slots_detectados:
+                if slots_uvs[i].name.find('bkup_') < 0:
+                    if slots_uvs[i].name != 'uvprojection':
+                        slots_uvs[i].name = "bkup_" + slots_uvs[i].name            
+        
+
 
 class Unwrap(object):
     
@@ -54,11 +68,7 @@ class Unwrap(object):
    
             uwap_cn_nombre()
             
-            try:
-                bpy.data.meshes[bpy.context.active_object.data.name].uv_textures["uvprojection"].active_render = True # aciendo el uvmap activo en el render
-            except:
-                pass
-            
             myobject.select = False
             bpy.context.active_object.name = '' # deseteando active object
             bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+            
