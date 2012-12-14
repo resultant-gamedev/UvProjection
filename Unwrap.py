@@ -53,7 +53,9 @@ class Unwrap(object):
             myobject.select = True
    
             uwap_cn_nombre()
-
+            
+            bpy.data.meshes[bpy.context.active_object.data.name].uv_textures["uvprojection"].active_render = True # aciendo el uvmap activo en el render
+            
             myobject.select = False
             bpy.context.active_object.name = '' # deseteando active object
             bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
