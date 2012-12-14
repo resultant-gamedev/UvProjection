@@ -56,10 +56,9 @@ for a in addons_hermanos:
 
 #FOLDER_NAME="uvprojection"
 
-if 'addons' in os.path.sys.path[1]:
-    RUTA = os.path.sys.path[1]+"/"+FOLDER_NAME
-else:
-    RUTA = os.path.sys.path[0]+"/"+FOLDER_NAME
+for i in range(len(rutas_addons)):
+    if os.path.exists(rutas_addons[i]+"/"+FOLDER_NAME):
+        RUTA = rutas_addons[i]+"/"+FOLDER_NAME
 
 sys.path.append(RUTA)
 
