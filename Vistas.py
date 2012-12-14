@@ -17,10 +17,14 @@ class Vistas(object):
             # 2 3 compositing
             # 3 4 default
             # 4 4 game logic
-
-            bpy.data.screens['Default'].areas[4].spaces[0].viewport_shade = 'TEXTURED'
-            bpy.data.screens['Scripting'].areas[2].spaces[0].viewport_shade = 'TEXTURED'
-            bpy.data.screens['Animation'].areas[4].spaces[0].viewport_shade = 'TEXTURED'
+            
+            for a in bpy.context.screen.areas:
+                if a.type == 'VIEW_3D':
+                    bpy.types.SpaceView3D(a.spaces[0]).viewport_shade = 'TEXTURED'
+                    
+            #bpy.data.screens['Default'].areas[4].spaces[0].viewport_shade = 'TEXTURED'
+            #bpy.data.screens['Scripting'].areas[2].spaces[0].viewport_shade = 'TEXTURED'
+            #bpy.data.screens['Animation'].areas[4].spaces[0].viewport_shade = 'TEXTURED'
 
             #bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
             bpy.data.scenes['Scene'].game_settings.material_mode = 'GLSL'
