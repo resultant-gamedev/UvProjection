@@ -18,10 +18,22 @@ class Vistas(object):
             # 3 4 default
             # 4 4 game logic
             
-            for a in bpy.context.screen.areas:
-                if a.type == 'VIEW_3D':
-                    bpy.types.SpaceView3D(a.spaces[0]).viewport_shade = 'TEXTURED'
-                    
+            # types:
+            # enum in [‘EMPTY’, ‘VIEW_3D’, ‘GRAPH_EDITOR’, ‘OUTLINER’, ‘PROPERTIES’, ‘FILE_BROWSER’,
+            # ‘IMAGE_EDITOR’, ‘INFO’, ‘SEQUENCE_EDITOR’, ‘TEXT_EDITOR’, ‘AUDIO_WINDOW’, ‘DOPESHEET_EDITOR’,
+            # ‘NLA_EDITOR’, ‘SCRIPTS_WINDOW’, ‘TIMELINE’, ‘NODE_EDITOR’, ‘LOGIC_EDITOR’, ‘CONSOLE’,
+            # ‘USER_PREFERENCES’], default ‘EMPTY’
+            #for a in bpy.context.screen.areas:
+            #    if a.type == 'VIEW_3D' or :
+            #        bpy.types.SpaceView3D(a.spaces[0]).viewport_shade = 'TEXTURED'
+            
+            # poner todas las vistas con view 3d en modo textured:
+            for s in bpy.data.screens:
+                if s.name == 'Scripting' or s.name == 'Default' or s.name == 'Animation':
+                    for a in s.areas:
+                        if a.type == 'VIEW_3D':
+                            bpy.types.SpaceView3D(a.spaces[0]).viewport_shade = 'TEXTURED'
+                        
             #bpy.data.screens['Default'].areas[4].spaces[0].viewport_shade = 'TEXTURED'
             #bpy.data.screens['Scripting'].areas[2].spaces[0].viewport_shade = 'TEXTURED'
             #bpy.data.screens['Animation'].areas[4].spaces[0].viewport_shade = 'TEXTURED'
