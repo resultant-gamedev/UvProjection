@@ -1,0 +1,9 @@
+Hi. This is my first addon. Automatic UVProjection is oriented to create a fast Camera Mapping projects.
+It is not perfect, but it facilitates and improves very much the camera mapping technique in blender.
+If someone wants to modify it or to improve it he can share it with us in http://zebus.xtreemhost.com/pyblend/
+
+Recordatorio me Falta: 
+1 asignar el map en texture
+2 asignar el map en el modifier
+3 hacer active render en el object data a los mapas nuevos
+creo que eso es todo...
