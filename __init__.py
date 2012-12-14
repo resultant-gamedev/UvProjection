@@ -28,17 +28,32 @@ bl_info = {
     "tracker_url": "",
     "category": ""}
 
-#import os
-#print( str( os.getcwd() ) )
-#C:\Program Files\Blender Foundation\blender-2.64-RC2-windows64
-#import os, sys
 import bpy
 import os, sys
 
-#RUTA="C:/Users/tux/AppData/Roaming/Blender Foundation/Blender/2.63/scripts/addons/UVProjection"
-#RUTA="/home/zenx/Blender/blender-2.64a-linux-glibc27-x86_64/2.64/scripts/addons/uvprojection"
+# rutas conocidas:
+rutas_scripts = bpy.utils.script_paths()
+rutas_addons = [str(rutas_scripts[0])+"/addons",str(rutas_scripts[1])+"/addons"]
 
-FOLDER_NAME="uvprojection"
+# creando array de addons disponibles:
+all_addons = [] # contendra un array con 0 y 1 con los addons del usuario y los de el path de blender.
+for i in range(len(rutas_addons)):
+    all_addons.append(os.listdir(rutas_addons[i]))
+
+# buscando en que ruta esta el addon:
+for i in range(len(all_addons)):
+    for a in all_addons[i]:
+        if a.find('rojection') >= 0:
+            ruta_encontrado = str(rutas_addons[i])
+            print(ruta_encontrado)
+
+# todos los addons del directorio en el que se encuentra mi addon:
+addons_hermanos = os.listdir(ruta_encontrado)
+for a in addons_hermanos:
+    if a.find('rojection') >= 0:
+        FOLDER_NAME=str(a)
+
+#FOLDER_NAME="uvprojection"
 
 if 'addons' in os.path.sys.path[1]:
     RUTA = os.path.sys.path[1]+"/"+FOLDER_NAME
@@ -157,7 +172,7 @@ class AccionToselected(bpy.types.Operator):
         ob = bpy.context.selected_objects
         # acciones:
         p.proyectorcillo(ob)
-                
+
         if ob:
             try:
                 img = imagen()
