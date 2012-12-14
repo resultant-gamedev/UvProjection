@@ -27,9 +27,22 @@ class Vistas(object):
             #    if a.type == 'VIEW_3D' or :
             #        bpy.types.SpaceView3D(a.spaces[0]).viewport_shade = 'TEXTURED'
             
+
+            # screen names:
+            # 3D View Full
+            # Animation
+            # Compositing
+            # Default
+            # Game Logic
+            # Motion Tracking
+            # Scripting
+            # UV Editing
+            # Video Editing
             # poner todas las vistas con view 3d en modo textured:
+            nscreens = ['3D View Full','Animation','Compositing','Default','Game Logic', \
+                        'Motion Tracking','Scripting','UV Editing','Video Editing']
             for s in bpy.data.screens:
-                if s.name == 'Scripting' or s.name == 'Default' or s.name == 'Animation':
+                if s.name in nscreens:
                     for a in s.areas:
                         if a.type == 'VIEW_3D':
                             bpy.types.SpaceView3D(a.spaces[0]).viewport_shade = 'TEXTURED'
