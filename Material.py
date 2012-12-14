@@ -50,6 +50,7 @@ class Material(object):
             ob.material_slots[ob.data.materials[0].name].material.texture_slots[0].texture.image = img
             # seteando que utilice el alpha de la propia imagen:
             ob.material_slots[ob.data.materials[0].name].material.texture_slots[0].use_map_alpha
+            ob.material_slots[ob.data.materials[0].name].material.texture_slots[0].uv_layer = 'uvprojection' # agregando el mapa de uv
             ######## fin materiales ########
 
             # reaplicando settings al modificador:
@@ -58,6 +59,7 @@ class Material(object):
             modificador.projector_count = 1
             modificador.projectors[0].object = camara
             ob.modifiers['UV_PROJECT'].image = img # seteamos la imagen
+            ob.modifiers['UV_PROJECT'].uv_layer = 'uvprojection' # agregando el mapa de uv
 
         except:
             pass
