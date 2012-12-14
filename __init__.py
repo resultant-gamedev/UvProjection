@@ -193,7 +193,6 @@ class AccionToselected(bpy.types.Operator):
                     # le seteamos las coordenadas de tipo de mapeo:
                     tc.uvgenerated(sobject) # este setea en las coordenadas de textura que use uv
                     # actualizamos las relaciones:
-                    
                     up.update(ob)
 
         
@@ -220,7 +219,6 @@ class Accion_ToALL(bpy.types.Operator):
                 # le seteamos las coordenadas de tipo de mapeo:
                 tc.uvgenerated(ob)
                 # actualizamos las relaciones:
-
                 up.update(ob)
     
         return{'FINISHED'}
