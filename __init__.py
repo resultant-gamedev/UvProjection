@@ -19,9 +19,8 @@ bl_info = {
     "name": "Automatic UVProjection",
     "description": "Quickly and easy create projects of Camera Mapping",
     "author": "Jorge Hernandez - Melenedez",
-    "version": (1, 6),
-    "blender": (2, 63, 0),
-    "api": 31236,
+    "version": (1, 7),
+    "blender": (2, 64, 0),
     "location": "",
     "warning": "",
     "wiki_url": "",
@@ -94,7 +93,7 @@ comodin = bpy.data.textures.new(type='IMAGE', name='comodin')
 
 # Menu in toolprops region
 class Botones_UVProjection(bpy.types.Panel):
-    bl_label = "Automatic UVProjection v16"
+    bl_label = "Automatic UVProjection"
     bl_space_type = "VIEW_3D"
     #bl_region_type = "TOOL_PROPS"
     bl_region_type = "TOOLS"
