@@ -203,9 +203,6 @@ class Accion_ToALL(bpy.types.Operator):
             for ob in bpy.data.objects:
                 if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
                     p.proyectorcillo(ob)         
-                    xloc = bpy.data.objects['Locator']
-                    xloc.show_x_ray = True
-
                     
                      # hago las acciones:
                     u.unwraping(ob)
