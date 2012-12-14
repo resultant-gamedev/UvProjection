@@ -174,34 +174,27 @@ class AccionToselected(bpy.types.Operator):
         p.proyectorcillo(ob)
 
         if ob:
-            try:
-                img = imagen()
-                
-                # si son muchos por eso me lo recorro:
-                for i in range(len(ob)):
-                    if ob[i].type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
-                        sobject = ob[i]
-                        # selecciono el objeto correspondiente a esa pasada:
-                        sobject.select = True
+            img = imagen()
+            v.vision()
+            # si son muchos por eso me lo recorro:
+            for i in range(len(ob)):
+                if ob[i].type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
+                    sobject = ob[i]
+                    # selecciono el objeto correspondiente a esa pasada:
+                    sobject.select = True
 
-                        # hago las acciones:
-                        u.unwraping(sobject)
-                        # uvmod requiere de la imagen se la paso por argumentos:
-                        um.uvmod(sobject,img)
-                        m.trymat(sobject,img)
+                    # hago las acciones:
+                    u.unwraping(sobject)
+                    # uvmod requiere de la imagen se la paso por argumentos:
+                    um.uvmod(sobject,img)
+                    m.trymat(sobject,img)
 
-                        # seteamos la imagen al modificador
-                        sobject.modifiers['UV_PROJECT'].image = img # seteamos la imagen
-                        # le seteamos las coordenadas de tipo de mapeo:
-                        tc.uvgenerated(sobject)
-                        # actualizamos las relaciones:
-                        
-                        up.update(ob)
-                        v.vision()
-                        
-            except:
-                pass
-        
+                    # le seteamos las coordenadas de tipo de mapeo:
+                    tc.uvgenerated(sobject) # este setea en las coordenadas de textura que use uv
+                    # actualizamos las relaciones:
+                    
+                    up.update(ob)
+
         
         return{'FINISHED'}
         
@@ -211,31 +204,24 @@ class Accion_ToALL(bpy.types.Operator):
 
     def execute(self, context):
 
-        try:
-        
-            img = imagen()
+        img = imagen()
+        v.vision()
+        for ob in bpy.data.objects:
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
+                p.proyectorcillo(ob)         
+                
+                # hago las acciones:
+                u.unwraping(ob)
+                # uvmod requiere de la imagen se la paso por argumentos:
+                um.uvmod(ob,img)
+                m.trymat(ob,img)
 
-            for ob in bpy.data.objects:
-                if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
-                    p.proyectorcillo(ob)         
-                    
-                     # hago las acciones:
-                    u.unwraping(ob)
-                    # uvmod requiere de la imagen se la paso por argumentos:
-                    um.uvmod(ob,img)
-                    m.trymat(ob,img)
+                # le seteamos las coordenadas de tipo de mapeo:
+                tc.uvgenerated(ob)
+                # actualizamos las relaciones:
 
-                    # seteamos la imagen al modificador
-                    ob.modifiers['UV_PROJECT'].image = img # seteamos la imagen
-                    # le seteamos las coordenadas de tipo de mapeo:
-                    tc.uvgenerated(ob)
-                    # actualizamos las relaciones:
-
-                    up.update(ob)
-                    v.vision()
-        except:
-            pass
-            
+                up.update(ob)
+    
         return{'FINISHED'}
     
 class RELATIONS(bpy.types.Operator):
