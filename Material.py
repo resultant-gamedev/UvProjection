@@ -1,5 +1,13 @@
 import bpy
 
+######## materiales ############
+def MiMaterial():
+    mat = bpy.data.materials.new("MiMaterial")
+    mat.use_shadeless = True
+    mat.use_transparency = True
+    mat.alpha = 0
+    return mat
+
 class Material(object):
     
     def __init__(self, ob = None, img = None):
@@ -9,25 +17,24 @@ class Material(object):
     def trymat(self,ob,img):
         try:
 
-            if "MiMaterial" not in ob.data.materials or img != ob.data.materials[0].texture_slots[0].texture.image.name:
+            #if "MiMaterial" not in ob.data.materials or img != ob.data.materials[0].texture_slots[0].texture.image.name:
 
-                ######## materiales ############
-                def MiMaterial():
-                    mat = bpy.data.materials.new("MiMaterial")
-                    mat.use_shadeless = True
-                    mat.use_transparency = True
-                    mat.alpha = 0
-                    return mat
-                multimat = MiMaterial()
+            # si no existe el material lo creamos:
+            # si no hay material da -1
+            if ob.data.materials.find('MiMaterial') < 0:
+            
+                material = MiMaterial()
                 
                 # si no hay materiales lo creamos:
                 if len(ob.data.materials) == 0:
-                    ob.data.materials.append(multimat)
+                    bpy.ops.object.material_slot_add()
+                    #ob.data.materials.append(material)
+                    ob.data.materials[0] = material
 
                 # le aplicamos el material al objeto:
-                ob.data.materials[0] = multimat
+                ob.data.materials[0] = material
                 
-                # abreviamos el slot de nombre de textura
+                # abreviamos el slot de nombre de textura (agregando slot texture)
                 slot = ob.data.materials[ob.data.materials[0].name].texture_slots.add()
                 # borramos las texturas en slot 1 osea la segunda si hubiera:
                 ob.data.materials[ob.data.materials[0].name].texture_slots.clear(1)
@@ -51,6 +58,7 @@ class Material(object):
                 modificador = ob.modifiers["UV_PROJECT"]
                 modificador.projector_count = 1
                 modificador.projectors[0].object = camara
+                ob.modifiers['UV_PROJECT'].image = img # seteamos la imagen
 
         except:
             pass
