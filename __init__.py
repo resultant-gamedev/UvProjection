@@ -32,7 +32,9 @@ import os, sys
 
 # rutas conocidas:
 rutas_scripts = bpy.utils.script_paths()
-rutas_addons = [str(rutas_scripts[0])+"/addons",str(rutas_scripts[1])+"/addons"]
+rutas_addons = []
+for i in range(len(rutas_scripts)):
+    rutas_addons.append(str(rutas_scripts[i])+"/addons")
 
 # creando array de addons disponibles:
 all_addons = [] # contendra un array con 0 y 1 con los addons del usuario y los de el path de blender.
