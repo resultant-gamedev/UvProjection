@@ -58,3 +58,5 @@ class Proyector(object):
             #bpy.ops.object.select_name(name=emp.name, extend=False)
             myobject = bpy.data.objects[str(emp.name)]
             myobject.select = True
+            xloc = bpy.data.objects['Locator']
+            xloc.show_x_ray = True
