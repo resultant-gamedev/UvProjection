@@ -30,6 +30,14 @@ bl_info = {
 import bpy
 import os, sys
 
+# rutas ##############################################
+NAB = "rojection" #<- Nombre Addon a Buscar
+
+if sys.platform.startswith("linux") or sys.platform.startswith("darwin"):
+    barra = "/"
+elif sys.platform.startswith("win") or sys.platform.startswith("dos") or sys.platform.startswith("ms"):
+    barra = "\\"
+    
 # rutas conocidas:
 rutas_scripts = bpy.utils.script_paths()
 rutas_addons = []
@@ -44,23 +52,24 @@ for i in range(len(rutas_addons)):
 # buscando en que ruta esta el addon:
 for i in range(len(all_addons)):
     for a in all_addons[i]:
-        if a.find('rojection') >= 0:
+        if a.find(NAB) >= 0:
             ruta_encontrado = str(rutas_addons[i])
             print(ruta_encontrado)
 
 # todos los addons del directorio en el que se encuentra mi addon:
 addons_hermanos = os.listdir(ruta_encontrado)
 for a in addons_hermanos:
-    if a.find('rojection') >= 0:
+    if a.find(NAB) >= 0:
         FOLDER_NAME=str(a)
 
 #FOLDER_NAME="uvprojection"
 
 for i in range(len(rutas_addons)):
-    if os.path.exists(rutas_addons[i]+"/"+FOLDER_NAME):
-        RUTA = rutas_addons[i]+"/"+FOLDER_NAME
+    if os.path.exists(rutas_addons[i]+barra+FOLDER_NAME):
+        RUTA = rutas_addons[i]+barra+FOLDER_NAME
 
 sys.path.append(RUTA)
+# fin rutas ##########################################
 
 from Vistas import *
 from Unwrap import *
@@ -84,8 +93,7 @@ bpy.types.Object.Proyector = bpy.props.StringProperty()
 bpy.types.Scene.IBPath = bpy.props.StringProperty(name="", attr="custompath", description="Base Image Path", maxlen= 1024, default="")
 
 
-# el comodin contiene la imagen actual del loader.
-comodin = bpy.data.textures.new(type='IMAGE', name='comodin')
+
 
 # intento de hacer un boton de reload addon (pero no tiene mucho sentido crear este boton)
 #def restart_addon():
@@ -105,6 +113,9 @@ class Botones_UVProjection(bpy.types.Panel):
         row = layout.row(align=True)
         col = row.column()
         col.alignment = 'EXPAND'
+        
+        # el comodin contiene la imagen actual del loader.
+        comodin = bpy.data.textures.new(type='IMAGE', name='comodin')
         
         # intento de hacer un boton de reload addon (pero no tiene mucho sentido crear este boton)
         #col.operator("restarta.restarta", text='Reload Addon')
@@ -147,6 +158,7 @@ class Botones_UVProjection(bpy.types.Panel):
         col.operator("mod.mod", text='To ALL')
         #col.operator("unwrapeado.unwrapeado", text='(Only) Auto UnWrap for all')
         col.operator("uprel.uprel", text='(Only) Update Relationships Mat-Rend')
+        
 
 # intento de hacer un boton de reload addon (pero no tiene mucho sentido crear este boton)        
 #class RECARGA(bpy.types.Operator):
