@@ -3,8 +3,8 @@ import bpy
 def crear_slot():
     bpy.ops.object.mode_set(mode='EDIT')
     bpy.ops.mesh.uv_texture_add() # agregando slot de mapa uv (por defecto de nombre UVMap)
-    bpy.ops.uv.unwrap(method='ANGLE_BASED', fill_holes=True, \
-    correct_aspect=True,use_subsurf_data=False, uv_subsurf_level=6)
+    bpy.ops.uv.unwrap(method='ANGLE_BASED', fill_holes=True, correct_aspect=True, use_subsurf_data=False, margin=0.001)
+    #bpy.ops.uv.unwrap(method='ANGLE_BASED', fill_holes=True, correct_aspect=True,use_subsurf_data=False, uv_subsurf_level=6)
     bpy.ops.object.mode_set(mode='OBJECT')
     try:
         bpy.context.object.data.uv_textures['UVMap'].name = "uvprojection" # renombrado
