@@ -55,4 +55,5 @@ class Vistas(object):
             bpy.data.scenes['Scene'].game_settings.material_mode = 'GLSL'
             # ponemos todas las imagenes en premultiply:
             for i in bpy.data.images[:]:
-                bpy.data.images[i.name].use_premultiply = True
+                bpy.data.images[i.name].alpha_mode = 'PREMUL'
+                #bpy.data.images[i.name].use_premultiply = True
