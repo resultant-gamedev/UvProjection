@@ -158,15 +158,30 @@ class Botones_UVProjection(bpy.types.Panel):
         col.operator("mod.mod", text='To ALL')
         #col.operator("unwrapeado.unwrapeado", text='(Only) Auto UnWrap for all')
         col.operator("uprel.uprel", text='(Only) Update Relationships Mat-Rend')
-        
 
-# intento de hacer un boton de reload addon (pero no tiene mucho sentido crear este boton)        
-#class RECARGA(bpy.types.Operator):
-#    bl_idname = "restarta.restarta"
-#    bl_label = "Reload Addon"
-#
-#    def execute(self, context):
-#        restart_addon()
+        # para el modo de coordenadas:
+        col.label("Transform Orientations:")
+        view = context.space_data
+        orientation = view.current_orientation
+
+        row = layout.row(align=True)
+        col.prop(view, "transform_orientation", text="")
+        #col.operator("transform.create_orientation", text="", icon='ZOOMIN')
+        if orientation:
+            row = layout.row(align=True)
+            col.prop(orientation, "name", text="")
+            col.operator("transform.delete_orientation", text="", icon="X")
+        # fin modo coordenadas ################################################
+        
+        row2 = layout.row(align=True)
+        col2 = row2.column()
+        col2.alignment = 'EXPAND'
+        
+        col2.operator("noinfluence.noinfluence", text='Without influence')
+        col2.operator("influence.influence", text='With influence')
+        col2.operator("setinverse.setinverse", text='Set inverse')
+        col2.operator("clearinverse.clearinverse", text='Clear inverse')
+
 
 def imagen():
     #img = bpy.data.images.load(filepath=bpy.context.scene.IBPath)
@@ -174,7 +189,76 @@ def imagen():
     #img.use_premultiply = True
     return img
 
+class Inverse(bpy.types.Operator):
+    bl_idname = "setinverse.setinverse"
+    bl_label = "Set inverse"
 
+    def execute(self, context):
+        bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        camara = bpy.data.objects["Proyector"]
+        camara.select = True # la selecciono
+        bpy.context.scene.objects.active = camara
+        try:
+            bpy.ops.constraint.childof_set_inverse(constraint="ChildOf", owner='OBJECT')
+            influencia = bpy.context.object.constraints["ChildOf"].influence #<- truco para q refreske
+            bpy.context.object.constraints["ChildOf"].influence = influencia+1 #<- truco para q refreske
+            bpy.context.object.constraints["ChildOf"].influence = influencia #<- truco para q refreske
+            #bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        except:
+            pass
+        return{'FINISHED'}
+        
+class ClearInverse(bpy.types.Operator):
+    bl_idname = "clearinverse.clearinverse"
+    bl_label = "Clear inverse"
+
+    def execute(self, context):
+        bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        camara = bpy.data.objects["Proyector"]
+        camara.select = True # la selecciono
+        bpy.context.scene.objects.active = camara
+        try:
+            bpy.ops.constraint.childof_clear_inverse(constraint="ChildOf", owner='OBJECT')
+            influencia = bpy.context.object.constraints["ChildOf"].influence #<- truco para q refreske
+            bpy.context.object.constraints["ChildOf"].influence = influencia+1 #<- truco para q refreske
+            bpy.context.object.constraints["ChildOf"].influence = influencia #<- truco para q refreske
+            #bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        except:
+            pass
+        return{'FINISHED'}
+    
+class Influence(bpy.types.Operator):
+    bl_idname = "influence.influence"
+    bl_label = "With influence"
+
+    def execute(self, context):
+        bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        camara = bpy.data.objects["Proyector"]
+        camara.select = True # la selecciono
+        bpy.context.scene.objects.active = camara
+        try:
+            bpy.context.object.constraints["ChildOf"].influence = 1
+            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        except:
+            pass
+        return{'FINISHED'}
+
+class NoInfluence(bpy.types.Operator):
+    bl_idname = "noinfluence.noinfluence"
+    bl_label = "Without influence"
+
+    def execute(self, context):
+        bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        camara = bpy.data.objects["Proyector"]
+        camara.select = True # la selecciono
+        bpy.context.scene.objects.active = camara
+        try:
+            bpy.context.object.constraints["ChildOf"].influence = 0
+            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        except:
+            pass
+        return{'FINISHED'}
+        
 class AccionToselected(bpy.types.Operator):
     bl_idname = "toselected.toselected"
     bl_label = "To Selected"
