@@ -152,15 +152,16 @@ class Botones_UVProjection(bpy.types.Panel):
         # bpy.data.cameras['Camera.001'].name = "jojo"
         # bpy.context.scene.camera.data.name = "grr"
         '''
-
+        
+        col.label("Apply projections:")
         #col.operator("ol.ol", text='(Only) load image to blender')
         col.operator("toselected.toselected", text='To Selected')
         col.operator("mod.mod", text='To ALL')
         #col.operator("unwrapeado.unwrapeado", text='(Only) Auto UnWrap for all')
-        col.operator("uprel.uprel", text='(Only) Update Relationships Mat-Rend')
+        col.operator("uprel.uprel", text='Update Relationships Mat-Rend')
 
         # para el modo de coordenadas:
-        col.label("Transform Orientations:")
+        col.label("Handlers Orientations:")
         view = context.space_data
         orientation = view.current_orientation
 
@@ -173,15 +174,17 @@ class Botones_UVProjection(bpy.types.Panel):
             col.operator("transform.delete_orientation", text="", icon="X")
         # fin modo coordenadas ################################################
         
-        row2 = layout.row(align=True)
-        col2 = row2.column()
-        col2.alignment = 'EXPAND'
+        col.label("Camera/Locator settings:")
+        col.operator("influencek.influencek", text='With influence Keep position')
+        col.operator("noinfluencek.noinfluencek", text='Without influence Keep position')
+        subrow = col.row(align=True)
+        subrow.operator("influence.influence", text='With influence')
+        subrow.operator("noinfluence.noinfluence", text='Without influence')
+        subrow2 = col.row(align=True)
+        subrow2.operator("setinverse.setinverse", text='Set inverse')
+        subrow2.operator("clearinverse.clearinverse", text='Clear inverse')
         
-        col2.operator("noinfluence.noinfluence", text='Without influence')
-        col2.operator("influence.influence", text='With influence')
-        col2.operator("setinverse.setinverse", text='Set inverse')
-        col2.operator("clearinverse.clearinverse", text='Clear inverse')
-
+        
 
 def imagen():
     #img = bpy.data.images.load(filepath=bpy.context.scene.IBPath)
@@ -189,9 +192,88 @@ def imagen():
     #img.use_premultiply = True
     return img
 
+class Influence(bpy.types.Operator):
+    bl_idname = "influence.influence"
+    bl_label = "With influence"
+    bl_description = "The projector will influence for locator"
+
+    def execute(self, context):
+        bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        camara = bpy.data.objects["Proyector"]
+        camara.select = True # la selecciono
+        bpy.context.scene.objects.active = camara
+        try:
+            bpy.context.object.constraints["ChildOf"].influence = 1
+            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        except:
+            pass
+        return{'FINISHED'}
+
+class NoInfluence(bpy.types.Operator):
+    bl_idname = "noinfluence.noinfluence"
+    bl_label = "Without influence"
+    bl_description = "The projector will not influence for locator"
+
+    def execute(self, context):
+        bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        camara = bpy.data.objects["Proyector"]
+        camara.select = True # la selecciono
+        bpy.context.scene.objects.active = camara
+        try:
+            bpy.context.object.constraints["ChildOf"].influence = 0
+            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        except:
+            pass
+        return{'FINISHED'}
+
+class InfluenceK(bpy.types.Operator):
+    bl_idname = "influencek.influencek"
+    bl_label = "With influence Keep position"
+    bl_description = "The projector will influence the locator and projector(camera) maintain the current position"
+
+    def execute(self, context):
+        bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        camara = bpy.data.objects["Proyector"]
+        camara.select = True # la selecciono
+        bpy.context.scene.objects.active = camara
+        try:
+            coordenada = bpy.data.objects['Proyector'].matrix_world.translation
+            coordenadas = [coordenada.x,coordenada.y,coordenada.z]
+            bpy.context.object.constraints["ChildOf"].influence = 1
+            bpy.data.objects['Proyector'].matrix_world.translation = coordenadas
+            bpy.ops.constraint.childof_set_inverse(constraint="ChildOf", owner='OBJECT')
+            influencia = bpy.context.object.constraints["ChildOf"].influence #<- truco para q refreske
+            bpy.context.object.constraints["ChildOf"].influence = influencia+1 #<- truco para q refreske
+            bpy.context.object.constraints["ChildOf"].influence = influencia #<- truco para q refreske
+            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        except:
+            pass
+        return{'FINISHED'}
+        
+class NoInfluencek(bpy.types.Operator):
+    bl_idname = "noinfluencek.noinfluencek"
+    bl_label = "Without influence Keep position"
+    bl_description = "The projector will not influence the locator and projector(camera) maintain the current position"
+    
+    def execute(self, context):
+        bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        camara = bpy.data.objects["Proyector"]
+        camara.select = True # la selecciono
+        bpy.context.scene.objects.active = camara
+        try:
+            coordenada = bpy.data.objects['Proyector'].matrix_world.translation
+            coordenadas = [coordenada.x,coordenada.y,coordenada.z]
+            bpy.context.object.constraints["ChildOf"].influence = 0
+            bpy.data.objects['Proyector'].matrix_world.translation = coordenadas
+            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        except:
+            pass
+        return{'FINISHED'}
+    
 class Inverse(bpy.types.Operator):
     bl_idname = "setinverse.setinverse"
     bl_label = "Set inverse"
+    bl_description = "Inverse influence from locator"
 
     def execute(self, context):
         bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
@@ -211,7 +293,8 @@ class Inverse(bpy.types.Operator):
 class ClearInverse(bpy.types.Operator):
     bl_idname = "clearinverse.clearinverse"
     bl_label = "Clear inverse"
-
+    bl_description = "Dont Inverse influence from locator"
+    
     def execute(self, context):
         bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
         camara = bpy.data.objects["Proyector"]
@@ -227,41 +310,11 @@ class ClearInverse(bpy.types.Operator):
             pass
         return{'FINISHED'}
     
-class Influence(bpy.types.Operator):
-    bl_idname = "influence.influence"
-    bl_label = "With influence"
-
-    def execute(self, context):
-        bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-        camara = bpy.data.objects["Proyector"]
-        camara.select = True # la selecciono
-        bpy.context.scene.objects.active = camara
-        try:
-            bpy.context.object.constraints["ChildOf"].influence = 1
-            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-        except:
-            pass
-        return{'FINISHED'}
-
-class NoInfluence(bpy.types.Operator):
-    bl_idname = "noinfluence.noinfluence"
-    bl_label = "Without influence"
-
-    def execute(self, context):
-        bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-        camara = bpy.data.objects["Proyector"]
-        camara.select = True # la selecciono
-        bpy.context.scene.objects.active = camara
-        try:
-            bpy.context.object.constraints["ChildOf"].influence = 0
-            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-        except:
-            pass
-        return{'FINISHED'}
         
 class AccionToselected(bpy.types.Operator):
     bl_idname = "toselected.toselected"
     bl_label = "To Selected"
+    bl_description = "Apply projections to selected objects"
     
     def execute(self, context):
         # capturo el objeto en cuestion:
@@ -296,6 +349,7 @@ class AccionToselected(bpy.types.Operator):
 class Accion_ToALL(bpy.types.Operator):
     bl_idname = "mod.mod"
     bl_label = "Apply/Update Modifier"
+    bl_description = "Apply projections to all objects"
 
     def execute(self, context):
 
@@ -321,6 +375,8 @@ class Accion_ToALL(bpy.types.Operator):
 class RELATIONS(bpy.types.Operator):
     bl_idname = "uprel.uprel"
     bl_label = "Update Relationship Material Modifier - Material Renderable"
+    bl_description = "Only Update Relationship Material Modifier - Material Renderable"
+    
     def execute(self, context):
         ob = bpy.context.active_object
         for ob in bpy.data.objects:
