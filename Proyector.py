@@ -21,22 +21,30 @@ class Proyector(object):
             ob.name = "Proyector" # el nombre del objeto camara
             ob.data.name = "Proyector" # el nombre de la camara real o subobjeto del objeto camara
             
+            #current_camera = bpy.context.scene.camera
+            #bpy.context.scene.camera = ob
+            
             bpy.ops.object.add(type='EMPTY', view_align=False, enter_editmode=False, location=(0, 0, 0), rotation=(0, 0, 0), layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
             emp = bpy.context.active_object # obteniendo objeto activo
             emp.name = "Locator"
+            
+            #bpy.context.scene.camera = current_camera 
 
-
-            #bpy.ops.object.select_name(name=ob.name, extend=True) # <--- OLD
-            #bpy.ops.object.select_name(name=emp.name, extend=True) # <--- OLD
-            myobject = bpy.data.objects[str(ob.name)]
-            myobject.select = True
-            myobject = bpy.data.objects[str(emp.name)]
-            myobject.select = True
-
-
-            bpy.ops.object.parent_set(type='OBJECT')
             bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-            #bpy.ops.object.select_name(name=emp.name, extend=False) # <--- OLD
+            myobject = bpy.data.objects[str(ob.name)]
+            myobject.select = True # lo selecciono
+            bpy.context.scene.objects.active = ob # lo hago objeto activo
+            bpy.ops.object.constraint_add(type='CHILD_OF')
+            bpy.context.object.constraints["ChildOf"].target = bpy.data.objects["Locator"]
+                       
+            # emparentado:
+            #myobject = bpy.data.objects[str(ob.name)]
+            #myobject.select = True
+            #myobject = bpy.data.objects[str(emp.name)]
+            #myobject.select = True
+            #bpy.ops.object.parent_set(type='OBJECT')
+
+            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
             myobject = bpy.data.objects[str(emp.name)]
             myobject.select = True
 
