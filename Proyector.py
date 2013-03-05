@@ -28,11 +28,12 @@ class Proyector(object):
             emp = bpy.context.active_object # obteniendo objeto activo
             emp.name = "Locator"
             
+           
             #bpy.context.scene.camera = current_camera 
 
             bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-            myobject = bpy.data.objects[str(ob.name)]
-            myobject.select = True # lo selecciono
+            myproyector = bpy.data.objects[str(ob.name)]
+            myproyector.select = True # lo selecciono
             bpy.context.scene.objects.active = ob # lo hago objeto activo
             bpy.ops.object.constraint_add(type='CHILD_OF')
             bpy.context.object.constraints["ChildOf"].target = bpy.data.objects["Locator"]
@@ -45,10 +46,11 @@ class Proyector(object):
             #bpy.ops.object.parent_set(type='OBJECT')
 
             bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-            myobject = bpy.data.objects[str(emp.name)]
-            myobject.select = True
-
-
+            myplocator = bpy.data.objects[str(emp.name)]
+            myplocator.select = True
+            bpy.context.scene.objects.active = myplocator # lo hago objeto activo
+            
+            
         if 'Locator' not in bpy.data.objects:
             bpy.ops.object.add(type='EMPTY', view_align=False, enter_editmode=False, location=(0, 0, 0), rotation=(0, 0, 0), layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
             emp = bpy.context.active_object # obteniendo objeto activo
