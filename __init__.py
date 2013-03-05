@@ -168,7 +168,9 @@ class Botones_UVProjection(bpy.types.Panel):
         subrow1 = col.row(align=True)
         subrow1.operator("lock.lock", text='Lock')
         subrow1.operator("unlock.unlock", text='Unlock')
-
+        
+        # select camera:
+        col.operator("selcam.selcam", text='Select Projector-Camera')
         
         # para el modo de coordenadas:
         col.label("Handlers Orientations:")
@@ -206,6 +208,19 @@ def imagen():
     #img.use_premultiply = True
     return img
 
+    
+class UpdateRott(bpy.types.Operator):
+    bl_idname = "selcam.selcam"
+    bl_label = "Select Projector-Camera"
+    bl_description = "Easy select Projector-Camera"
+
+    def execute(self, context):
+        bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        myprojector = bpy.data.objects["Proyector"]
+        myprojector.select = True
+        bpy.context.scene.objects.active = myprojector # lo hago objeto activo
+        return{'FINISHED'}
+    
 class LockOb(bpy.types.Operator):
     bl_idname = "lock.lock"    
     bl_label = "Lock"
