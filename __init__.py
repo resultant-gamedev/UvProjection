@@ -163,6 +163,11 @@ class Botones_UVProjection(bpy.types.Panel):
         subrow0 = col.row(align=True)
         subrow0.operator("setwire.setwire", text='Wire On')
         subrow0.operator("unsetwire.unsetwire", text='Wire Off')
+        
+        # lock unlock
+        subrow1 = col.row(align=True)
+        subrow1.operator("lock.lock", text='Lock')
+        subrow1.operator("unlock.unlock", text='Unlock')
 
         
         # para el modo de coordenadas:
@@ -200,7 +205,48 @@ def imagen():
     img = bpy.data.textures[0].image
     #img.use_premultiply = True
     return img
-    
+
+class LockOb(bpy.types.Operator):
+    bl_idname = "lock.lock"    
+    bl_label = "Lock"
+    bl_description = "Lock objects"
+    def execute(self, context):
+        
+        if bpy.context.selected_objects:
+            for o in bpy.context.selected_objects:
+                for x in range(len(o.lock_location)):
+                    o.lock_location[x] = True
+                    o.lock_rotation[x] = True
+                    o.lock_scale[x] = True
+        else:
+            for o in bpy.data.objects:
+                for x in range(len(o.lock_location)):
+                    o.lock_location[x] = True
+                    o.lock_rotation[x] = True
+                    o.lock_scale[x] = True
+
+        return{'FINISHED'}
+
+class UnLockOb(bpy.types.Operator):
+    bl_idname = "unlock.unlock"    
+    bl_label = "Lock"
+    bl_description = "Lock objects"
+    def execute(self, context):
+        
+        if bpy.context.selected_objects:
+            for o in bpy.context.selected_objects:
+                for x in range(len(o.lock_location)):
+                    o.lock_location[x] = False
+                    o.lock_rotation[x] = False
+                    o.lock_scale[x] = False
+        else:
+            for o in bpy.data.objects:
+                for x in range(len(o.lock_location)):
+                    o.lock_location[x] = False
+                    o.lock_rotation[x] = False
+                    o.lock_scale[x] = False
+
+        return{'FINISHED'}
     
 class WireOn(bpy.types.Operator):
     bl_idname = "setwire.setwire"    
