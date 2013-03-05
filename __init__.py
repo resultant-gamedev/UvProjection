@@ -160,8 +160,9 @@ class Botones_UVProjection(bpy.types.Panel):
         #col.operator("unwrapeado.unwrapeado", text='(Only) Auto UnWrap for all')
         col.operator("uprel.uprel", text='Update Relationships Mat-Rend')
 
-        col.operator("setwire.setwire", text='Set wireframe mode On')
-        col.operator("unsetwire.unsetwire", text='UnSet wireframe mode Off')
+        subrow0 = col.row(align=True)
+        subrow0.operator("setwire.setwire", text='Wire On')
+        subrow0.operator("unsetwire.unsetwire", text='Wire Off')
 
         
         # para el modo de coordenadas:
