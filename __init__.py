@@ -160,6 +160,10 @@ class Botones_UVProjection(bpy.types.Panel):
         #col.operator("unwrapeado.unwrapeado", text='(Only) Auto UnWrap for all')
         col.operator("uprel.uprel", text='Update Relationships Mat-Rend')
 
+        col.operator("setwire.setwire", text='Set wireframe mode On')
+        col.operator("unsetwire.unsetwire", text='UnSet wireframe mode Off')
+
+        
         # para el modo de coordenadas:
         col.label("Handlers Orientations:")
         view = context.space_data
@@ -175,14 +179,18 @@ class Botones_UVProjection(bpy.types.Panel):
         # fin modo coordenadas ################################################
         
         col.label("Camera/Locator settings:")
+        
+        # por ahora lo dejo inhabilitado
+        #col.operator("updaterot.updaterot", text='Update locator orientation')
+        
         col.operator("influencek.influencek", text='With influence Keep position')
         col.operator("noinfluencek.noinfluencek", text='Without influence Keep position')
-        subrow = col.row(align=True)
-        subrow.operator("influence.influence", text='With influence')
-        subrow.operator("noinfluence.noinfluence", text='Without influence')
-        subrow2 = col.row(align=True)
-        subrow2.operator("setinverse.setinverse", text='Set inverse')
-        subrow2.operator("clearinverse.clearinverse", text='Clear inverse')
+        #subrow = col.row(align=True)
+        #subrow.operator("influence.influence", text='With influence')
+        #subrow.operator("noinfluence.noinfluence", text='Without influence')
+        #subrow2 = col.row(align=True)
+        #subrow2.operator("setinverse.setinverse", text='Set inverse')
+        #subrow2.operator("clearinverse.clearinverse", text='Clear inverse')
         
         
 
@@ -191,7 +199,84 @@ def imagen():
     img = bpy.data.textures[0].image
     #img.use_premultiply = True
     return img
+    
+    
+class WireOn(bpy.types.Operator):
+    bl_idname = "setwire.setwire"    
+    bl_label = "Set wireframe mode On"
+    bl_description = "Set wireframe mode On"
+    def execute(self, context):
+        if bpy.context.selected_objects:
+            for o in bpy.context.selected_objects:
+                o.show_wire = True
+        else:
+            for o in bpy.data.objects:
+                o.show_wire = True
+        return{'FINISHED'}
 
+class WireOff(bpy.types.Operator):
+    bl_idname = "unsetwire.unsetwire"
+    bl_label = "UnSet wireframe mode Off"
+    bl_description = "Set wireframe mode Off"
+    
+    def execute(self, context):
+        if bpy.context.selected_objects:
+            for o in bpy.context.selected_objects:
+                o.show_wire = False
+        else:
+            for o in bpy.data.objects:
+                o.show_wire = False
+        return{'FINISHED'}
+        
+# no consigo hacer que funcione desde script ni script editor, solo funciona si lo ejecuto en la consola :S
+# asi que por ahora lo dejare inhabilitado.
+class UpdateRott(bpy.types.Operator):
+    bl_idname = "updaterot.updaterot"
+    bl_label = "Update orientation locator"
+    bl_description = "Update orientation locator"
+
+    def execute(self, context):
+        bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        myplocator = bpy.data.objects["Locator"]
+        myplocator.select = True
+        bpy.context.scene.objects.active = myplocator # lo hago objeto activo
+
+        #bpy.ops.object.constraint_add(type='TRACK_TO')
+        myplocator.constraints.new('TRACK_TO')
+        myplocator.constraints["TrackTo"].target = bpy.data.objects["Proyector"]
+        myplocator.constraints["TrackTo"].up_axis = 'UP_Y'
+        myplocator.constraints["TrackTo"].track_axis = 'TRACK_Z'
+
+        rotacion = []
+        rotquat = []
+        for i in myplocator.matrix_world.to_euler():
+            rotacion.append(i)
+            
+        for i in myplocator.matrix_world.to_quaternion():
+            rotquat.append(i)
+
+        for i in range(len(rotacion)):
+            if len(str(rotacion[i])) > 4:
+                rotacion[i] = round(rotacion[i],4)
+
+        for i in range(len(rotquat)):
+            if len(str(rotquat[i])) > 4:
+                rotquat[i] = round(rotquat[i],4)
+                
+        #rotaciones = [rotacion[0],rotacion[1],rotacion[2]]
+        #rotaciones = [rotacion.x,rotacion.y,rotacion.z]
+
+        cons = myplocator.constraints['TrackTo']
+        myplocator.constraints["TrackTo"].target = None
+        myplocator.constraints.remove(cons)
+        bpy.context.active_object.rotation_mode='QUATERNION'
+        bpy.context.active_object.rotation_euler = rotquat[0],rotquat[1],rotquat[2]
+        bpy.context.active_object.rotation_mode='XYZ'
+        bpy.context.active_object.rotation_euler = rotacion[0],rotacion[1],rotacion[2]
+        #myplocator.rotation_euler = rotacion[0],rotacion[1],rotacion[2]
+        
+        return{'FINISHED'}
+    
 class Influence(bpy.types.Operator):
     bl_idname = "influence.influence"
     bl_label = "With influence"
@@ -236,6 +321,7 @@ class InfluenceK(bpy.types.Operator):
         camara = bpy.data.objects["Proyector"]
         camara.select = True # la selecciono
         bpy.context.scene.objects.active = camara
+        locator = bpy.data.objects["Locator"]
         try:
             coordenada = bpy.data.objects['Proyector'].matrix_world.translation
             coordenadas = [coordenada.x,coordenada.y,coordenada.z]
@@ -245,7 +331,9 @@ class InfluenceK(bpy.types.Operator):
             influencia = bpy.context.object.constraints["ChildOf"].influence #<- truco para q refreske
             bpy.context.object.constraints["ChildOf"].influence = influencia+1 #<- truco para q refreske
             bpy.context.object.constraints["ChildOf"].influence = influencia #<- truco para q refreske
-            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+            #bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+            locator.select = True # la selecciono
+            bpy.context.scene.objects.active = locator
         except:
             pass
         return{'FINISHED'}
@@ -260,12 +348,15 @@ class NoInfluencek(bpy.types.Operator):
         camara = bpy.data.objects["Proyector"]
         camara.select = True # la selecciono
         bpy.context.scene.objects.active = camara
+        locator = bpy.data.objects["Locator"]
         try:
             coordenada = bpy.data.objects['Proyector'].matrix_world.translation
             coordenadas = [coordenada.x,coordenada.y,coordenada.z]
             bpy.context.object.constraints["ChildOf"].influence = 0
             bpy.data.objects['Proyector'].matrix_world.translation = coordenadas
-            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+            #bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+            locator.select = True # la selecciono
+            bpy.context.scene.objects.active = locator
         except:
             pass
         return{'FINISHED'}
