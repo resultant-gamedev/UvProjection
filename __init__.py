@@ -153,6 +153,20 @@ class Botones_UVProjection(bpy.types.Panel):
         # bpy.context.scene.camera.data.name = "grr"
         '''
         
+        # para el modo de coordenadas:
+        col.label("Handlers Orientations:")
+        view = context.space_data
+        orientation = view.current_orientation
+
+        row = layout.row(align=True)
+        col.prop(view, "transform_orientation", text="")
+        #col.operator("transform.create_orientation", text="", icon='ZOOMIN')
+        if orientation:
+            row = layout.row(align=True)
+            col.prop(orientation, "name", text="")
+            col.operator("transform.delete_orientation", text="", icon="X")
+        # fin modo coordenadas ################################################
+        
         col.label("Apply projections:")
         #col.operator("ol.ol", text='(Only) load image to blender')
         col.operator("toselected.toselected", text='To Selected')
@@ -171,20 +185,6 @@ class Botones_UVProjection(bpy.types.Panel):
         
         # select camera:
         col.operator("selcam.selcam", text='Select Projector-Camera')
-        
-        # para el modo de coordenadas:
-        col.label("Handlers Orientations:")
-        view = context.space_data
-        orientation = view.current_orientation
-
-        row = layout.row(align=True)
-        col.prop(view, "transform_orientation", text="")
-        #col.operator("transform.create_orientation", text="", icon='ZOOMIN')
-        if orientation:
-            row = layout.row(align=True)
-            col.prop(orientation, "name", text="")
-            col.operator("transform.delete_orientation", text="", icon="X")
-        # fin modo coordenadas ################################################
         
         col.label("Camera/Locator settings:")
         
