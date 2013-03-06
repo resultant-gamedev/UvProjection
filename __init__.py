@@ -19,8 +19,8 @@ bl_info = {
     "name": "Automatic UVProjection",
     "description": "Quickly and easy create projects of Camera Mapping",
     "author": "Jorge Hernandez - Melenedez",
-    "version": (1, 7),
-    "blender": (2, 64, 0),
+    "version": (1, 8),
+    "blender": (2, 66, 0),
     "location": "",
     "warning": "",
     "wiki_url": "",
@@ -172,7 +172,7 @@ class Botones_UVProjection(bpy.types.Panel):
         col.operator("toselected.toselected", text='To Selected')
         col.operator("mod.mod", text='To ALL')
         #col.operator("unwrapeado.unwrapeado", text='(Only) Auto UnWrap for all')
-        col.operator("uprel.uprel", text='Update Relationships Mat-Rend')
+        col.operator("uprel.uprel", text='Material //-// Render  -  Update')
 
         col.label("Objects:")
         # lock unlock
