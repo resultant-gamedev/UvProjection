@@ -91,8 +91,7 @@ up = Update()
 # son como propiedades para el item de interfaz:
 bpy.types.Object.Proyector = bpy.props.StringProperty()
 bpy.types.Scene.IBPath = bpy.props.StringProperty(name="", attr="custompath", description="Base Image Path", maxlen= 1024, default="")
-
-
+bpy.types.Scene.My_int_smooth = bpy.props.IntProperty(default=2)
 
 
 # intento de hacer un boton de reload addon (pero no tiene mucho sentido crear este boton)
@@ -175,12 +174,16 @@ class Botones_UVProjection(bpy.types.Panel):
         col.operator("uprel.uprel", text='Material //-// Render  -  Update')
 
         col.label("Objects:")
-        # lock unlock
+        col.prop(context.scene,"My_int_smooth", text="Resolution: ")
+        col.operator("setupdatesmooth.setupdatesmooth", text='Apply/Update  -  Resolution')
+        col.operator("importsmooth.importsmooth", text='Smooths  -  Import')
+        col.operator("delsmooth.delsmooth", text='Resolutions  -  Remove ')
+        # lock unlock:
         subrow1 = col.row(align=True)
         subrow1.operator("unlock.unlock", text='Unlock')
         subrow1.operator("lock.lock", text='Lock')
-        
-        # wire
+
+        # wire:
         subrow0 = col.row(align=True)
         subrow0.operator("unsetwire.unsetwire", text='Wire Off')
         subrow0.operator("setwire.setwire", text='Wire On')
@@ -202,7 +205,6 @@ class Botones_UVProjection(bpy.types.Panel):
         #subrow2.operator("setinverse.setinverse", text='Set inverse')
         #subrow2.operator("clearinverse.clearinverse", text='Clear inverse')
         
-        
 
 def imagen():
     #img = bpy.data.images.load(filepath=bpy.context.scene.IBPath)
@@ -210,7 +212,171 @@ def imagen():
     #img.use_premultiply = True
     return img
 
-    
+def para_resolucion(opcion):
+    valors = bpy.context.scene.My_int_smooth    
+    if opcion == 'seleccionados':
+        for ob in bpy.context.selected_objects:
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META' or ob.type == 'CURVE' or ob.type == 'FONT':
+                if 'MySubsurf' not in ob.modifiers:
+                    # comprobando si tiene algun subsurf:
+                    indice = 0
+                    existe = False
+                    while (not existe and indice < len(ob.modifiers)):
+                        if ob.modifiers[indice].type == 'SUBSURF':
+                            existe = True
+                        indice +=1
+                        
+                    bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+                    myprojector = bpy.data.objects[ob.name]
+                    myprojector.select = True
+                    bpy.context.scene.objects.active = myprojector # lo hago objeto activo
+
+                    # si no tiene ningun subsurf anterior:        
+                    if not existe:
+                        bpy.ops.object.subdivision_set(level=valors, relative=False)
+                        if len(ob.modifiers) >= 1:
+                            lastmod = ob.modifiers[len(ob.modifiers)-1]
+
+                            if lastmod.type == 'SUBSURF':
+                                lastmod.name = 'MySubsurf'
+                                ob.modifiers["MySubsurf"].subdivision_type = 'SIMPLE'
+                                ob.modifiers["MySubsurf"].show_only_control_edges = True
+                                ob.modifiers["MySubsurf"].show_in_editmode = False
+
+                        # creando lista de modificadores
+                        modificadores = []
+                        for mod in ob.modifiers:
+                            modificadores.append(mod)
+                        
+                        # si existen otros modificadores lo comprobamos
+                        if len(modificadores) > 1: # y si existen subimos un nivel por cada modificador (para posicionarlo arriba del todo):
+                            for i in range(len(modificadores)):
+                                bpy.ops.object.modifier_move_up(modifier="MySubsurf")
+                else:
+                    # creando lista de modificadores
+                    modificadores = []
+                    for mod in ob.modifiers:
+                        modificadores.append(mod)
+                    
+                    for am in modificadores:
+                        if am.type == 'SUBSURF':
+                            if am.name == 'MySubsurf':
+                                am.name = 'MySubsurf'
+                                am.levels = valors
+                                am.subdivision_type = 'SIMPLE'
+                                am.show_only_control_edges = True
+                                am.show_in_editmode = False
+                               
+                    # si existen otros modificadores lo comprobamos
+                    if len(modificadores) > 1: # y si existen subimos un nivel por cada modificador (para posicionarlo arriba del todo):
+                        for i in range(len(modificadores)):
+                            bpy.ops.object.modifier_move_up(modifier="MySubsurf")
+        
+    else:
+        for ob in bpy.context.scene.objects:
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META' or ob.type == 'CURVE' or ob.type == 'FONT':
+                    
+                if 'MySubsurf' not in ob.modifiers:
+                    # comprobando si tiene algun subsurf:
+                    indice = 0
+                    existe = False
+                    while (not existe and indice < len(ob.modifiers)):
+                        if ob.modifiers[indice].type == 'SUBSURF':
+                            existe = True
+                        indice +=1
+                        
+                    bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+                    myprojector = bpy.data.objects[ob.name]
+                    myprojector.select = True
+                    bpy.context.scene.objects.active = myprojector # lo hago objeto activo
+
+                    # si no tiene ningun subsurf anterior:        
+                    if not existe:
+                        bpy.ops.object.subdivision_set(level=valors, relative=False)
+                        if len(ob.modifiers) >= 1:
+                            lastmod = ob.modifiers[len(ob.modifiers)-1]
+
+                            if lastmod.type == 'SUBSURF':
+                                lastmod.name = 'MySubsurf'
+                                ob.modifiers["MySubsurf"].subdivision_type = 'SIMPLE'
+                                ob.modifiers["MySubsurf"].show_only_control_edges = True
+                                ob.modifiers["MySubsurf"].show_in_editmode = False
+
+                        # creando lista de modificadores
+                        modificadores = []
+                        for mod in ob.modifiers:
+                            modificadores.append(mod)
+                        
+                        # si existen otros modificadores lo comprobamos
+                        if len(modificadores) > 1: # y si existen subimos un nivel por cada modificador (para posicionarlo arriba del todo):
+                            for i in range(len(modificadores)):
+                                bpy.ops.object.modifier_move_up(modifier="MySubsurf")
+                else:
+                    # creando lista de modificadores
+                    modificadores = []
+                    for mod in ob.modifiers:
+                        modificadores.append(mod)
+                    
+                    for am in modificadores:
+                        if am.type == 'SUBSURF':
+                            if am.name == 'MySubsurf':
+                                am.name = 'MySubsurf'
+                                am.levels = valors
+                                am.subdivision_type = 'SIMPLE'
+                                am.show_only_control_edges = True
+                                am.show_in_editmode = False
+                                
+                    # si existen otros modificadores lo comprobamos
+                    if len(modificadores) > 1: # y si existen subimos un nivel por cada modificador (para posicionarlo arriba del todo):
+                        for i in range(len(modificadores)):
+                            bpy.ops.object.modifier_move_up(modifier="MySubsurf")
+
+class DelSmooth(bpy.types.Operator):
+    bl_idname = "delsmooth.delsmooth"
+    bl_label = "Del Resolution"
+    bl_description = "Remove all resolution smooths"
+    def execute(self, context):
+        for ob in bpy.context.scene.objects:
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META' or ob.type == 'CURVE' or ob.type == 'FONT':
+                bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+                myprojector = bpy.data.objects[ob.name]
+                myprojector.select = True
+                bpy.context.scene.objects.active = myprojector # lo hago objeto activo
+                for mod in ob.modifiers:
+                    if mod.type == 'SUBSURF':
+                        if mod.name == 'MySubsurf':
+                            bpy.ops.object.modifier_remove(modifier="MySubsurf")
+        return{'FINISHED'}
+                            
+class ImportSmooth(bpy.types.Operator):
+    bl_idname = "importsmooth.importsmooth"
+    bl_label = "Import smooth"
+    bl_description = "rename all Subsurf to MySubsurf for work in my resolution system"
+    def execute(self, context):
+        for ob in bpy.data.objects:
+            for mod in ob.modifiers:
+                if mod.type == 'SUBSURF':
+                    if mod.name != 'MySubsurf':
+                        mod.name = 'MySubsurf'
+        bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        return{'FINISHED'}
+                 
+class UpdateAddSmooth(bpy.types.Operator):
+    bl_idname = "setupdatesmooth.setupdatesmooth"
+    bl_label = "Resolution Add/Update"
+    bl_description = "Add/update all smooths. If have a previous subsurf, dont it does nothing, except if you rename this to Mysubsurf"
+
+    def execute(self, context):
+        if bpy.context.selected_objects:
+            opcion = 'seleccionados'
+            para_resolucion(opcion)
+            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        else:
+            opcion = 'all'
+            para_resolucion(opcion)
+            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+        return{'FINISHED'}
+            
 class UpdateRott(bpy.types.Operator):
     bl_idname = "selcam.selcam"
     bl_label = "Select Projector-Camera"
