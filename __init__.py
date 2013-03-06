@@ -174,25 +174,26 @@ class Botones_UVProjection(bpy.types.Panel):
         #col.operator("unwrapeado.unwrapeado", text='(Only) Auto UnWrap for all')
         col.operator("uprel.uprel", text='Update Relationships Mat-Rend')
 
-        subrow0 = col.row(align=True)
-        subrow0.operator("setwire.setwire", text='Wire On')
-        subrow0.operator("unsetwire.unsetwire", text='Wire Off')
-        
         # lock unlock
         subrow1 = col.row(align=True)
-        subrow1.operator("lock.lock", text='Lock')
         subrow1.operator("unlock.unlock", text='Unlock')
+        subrow1.operator("lock.lock", text='Lock')
+        
+        # wire
+        subrow0 = col.row(align=True)
+        subrow0.operator("unsetwire.unsetwire", text='Wire Off')
+        subrow0.operator("setwire.setwire", text='Wire On')
         
         # select camera:
-        col.operator("selcam.selcam", text='Select Projector-Camera')
+        col.operator("selcam.selcam", text='projector(camera)  -  Select')
         
         col.label("Camera/Locator settings:")
         
         # por ahora lo dejo inhabilitado
         #col.operator("updaterot.updaterot", text='Update locator orientation')
         
-        col.operator("influencek.influencek", text='With influence Keep position')
-        col.operator("noinfluencek.noinfluencek", text='Without influence Keep position')
+        col.operator("influencek.influencek", text='locator  -  Connect')
+        col.operator("noinfluencek.noinfluencek", text='locator  -  Disconnect')
         #subrow = col.row(align=True)
         #subrow.operator("influence.influence", text='With influence')
         #subrow.operator("noinfluence.noinfluence", text='Without influence')
