@@ -179,6 +179,11 @@ class Botones_UVProjection(bpy.types.Panel):
         col.operator("importsmooth.importsmooth", text='Smooths  -  Import')
         col.operator("delsmooth.delsmooth", text='Resolutions  -  Remove ')
         
+        # wire:
+        subrow0 = col.row(align=True)
+        subrow0.operator("unsetwire.unsetwire", text='Wire Off')
+        subrow0.operator("setwire.setwire", text='Wire On')
+        
         # select camera:
         col.operator("selctcam.selctcam", text='projector-(camera)  -  Select')
         
@@ -187,11 +192,6 @@ class Botones_UVProjection(bpy.types.Panel):
         subrow1.operator("unlock.unlock", text='Unlock')
         subrow1.operator("lock.lock", text='Lock')
 
-        # wire:
-        subrow0 = col.row(align=True)
-        subrow0.operator("unsetwire.unsetwire", text='Wire Off')
-        subrow0.operator("setwire.setwire", text='Wire On')
-        
         col.label("Camera/Locator settings:")
         
         # por ahora lo dejo inhabilitado
