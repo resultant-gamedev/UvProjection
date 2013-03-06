@@ -174,6 +174,7 @@ class Botones_UVProjection(bpy.types.Panel):
         #col.operator("unwrapeado.unwrapeado", text='(Only) Auto UnWrap for all')
         col.operator("uprel.uprel", text='Update Relationships Mat-Rend')
 
+        col.label("Objects:")
         # lock unlock
         subrow1 = col.row(align=True)
         subrow1.operator("unlock.unlock", text='Unlock')
