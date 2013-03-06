@@ -178,6 +178,10 @@ class Botones_UVProjection(bpy.types.Panel):
         col.operator("setupdatesmooth.setupdatesmooth", text='Apply/Update  -  Resolution')
         col.operator("importsmooth.importsmooth", text='Smooths  -  Import')
         col.operator("delsmooth.delsmooth", text='Resolutions  -  Remove ')
+        
+        # select camera:
+        col.operator("selctcam.selctcam", text='projector-(camera)  -  Select')
+        
         # lock unlock:
         subrow1 = col.row(align=True)
         subrow1.operator("unlock.unlock", text='Unlock')
@@ -187,9 +191,6 @@ class Botones_UVProjection(bpy.types.Panel):
         subrow0 = col.row(align=True)
         subrow0.operator("unsetwire.unsetwire", text='Wire Off')
         subrow0.operator("setwire.setwire", text='Wire On')
-        
-        # select camera:
-        col.operator("selcam.selcam", text='projector(camera)  -  Select')
         
         col.label("Camera/Locator settings:")
         
@@ -377,9 +378,9 @@ class UpdateAddSmooth(bpy.types.Operator):
             bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
         return{'FINISHED'}
             
-class UpdateRott(bpy.types.Operator):
-    bl_idname = "selcam.selcam"
-    bl_label = "Select Projector-Camera"
+class SelectCam(bpy.types.Operator):
+    bl_idname = "selctcam.selctcam"
+    bl_label = "projector-(camera)  -  Select"
     bl_description = "Easy select Projector-Camera"
 
     def execute(self, context):
