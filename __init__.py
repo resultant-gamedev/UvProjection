@@ -194,8 +194,7 @@ class Botones_UVProjection(bpy.types.Panel):
 
         col.label("Camera/Locator settings:")
         
-        # por ahora lo dejo inhabilitado
-        #col.operator("updaterot.updaterot", text='Update locator orientation')
+        col.operator("updaterot.updaterot", text='Locator  -  Update Orientations')
         
         col.operator("influencek.influencek", text='locator  -  Connect')
         col.operator("noinfluencek.noinfluencek", text='locator  -  Disconnect')
@@ -459,11 +458,9 @@ class WireOff(bpy.types.Operator):
                 o.show_wire = False
         return{'FINISHED'}
         
-# no consigo hacer que funcione desde script ni script editor, solo funciona si lo ejecuto en la consola :S
-# asi que por ahora lo dejare inhabilitado.
 class UpdateRott(bpy.types.Operator):
     bl_idname = "updaterot.updaterot"
-    bl_label = "Update orientation locator"
+    bl_label = "Locator  -  Update Orientations"
     bl_description = "Update orientation locator"
 
     def execute(self, context):
@@ -472,40 +469,14 @@ class UpdateRott(bpy.types.Operator):
         myplocator.select = True
         bpy.context.scene.objects.active = myplocator # lo hago objeto activo
 
-        #bpy.ops.object.constraint_add(type='TRACK_TO')
         myplocator.constraints.new('TRACK_TO')
         myplocator.constraints["TrackTo"].target = bpy.data.objects["Proyector"]
         myplocator.constraints["TrackTo"].up_axis = 'UP_Y'
         myplocator.constraints["TrackTo"].track_axis = 'TRACK_Z'
 
-        rotacion = []
-        rotquat = []
-        for i in myplocator.matrix_world.to_euler():
-            rotacion.append(i)
-            
-        for i in myplocator.matrix_world.to_quaternion():
-            rotquat.append(i)
+        bpy.ops.nla.bake(frame_start=1, frame_end=1, step=1, only_selected=True, clear_constraints=True, bake_types={'OBJECT'})
+        bpy.ops.anim.keyframe_clear_v3d()
 
-        for i in range(len(rotacion)):
-            if len(str(rotacion[i])) > 4:
-                rotacion[i] = round(rotacion[i],4)
-
-        for i in range(len(rotquat)):
-            if len(str(rotquat[i])) > 4:
-                rotquat[i] = round(rotquat[i],4)
-                
-        #rotaciones = [rotacion[0],rotacion[1],rotacion[2]]
-        #rotaciones = [rotacion.x,rotacion.y,rotacion.z]
-
-        cons = myplocator.constraints['TrackTo']
-        myplocator.constraints["TrackTo"].target = None
-        myplocator.constraints.remove(cons)
-        bpy.context.active_object.rotation_mode='QUATERNION'
-        bpy.context.active_object.rotation_euler = rotquat[0],rotquat[1],rotquat[2]
-        bpy.context.active_object.rotation_mode='XYZ'
-        bpy.context.active_object.rotation_euler = rotacion[0],rotacion[1],rotacion[2]
-        #myplocator.rotation_euler = rotacion[0],rotacion[1],rotacion[2]
-        
         return{'FINISHED'}
     
 class Influence(bpy.types.Operator):
