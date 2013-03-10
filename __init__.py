@@ -413,7 +413,7 @@ class LockOb(bpy.types.Operator):
 class UnLockOb(bpy.types.Operator):
     bl_idname = "unlock.unlock"    
     bl_label = "Lock"
-    bl_description = "Lock objects"
+    bl_description = "UnLock objects"
     def execute(self, context):
         
         if bpy.context.selected_objects:
