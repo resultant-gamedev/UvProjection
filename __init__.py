@@ -464,18 +464,28 @@ class UpdateRott(bpy.types.Operator):
     bl_description = "Update orientation locator"
 
     def execute(self, context):
-        bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-        myplocator = bpy.data.objects["Locator"]
-        myplocator.select = True
-        bpy.context.scene.objects.active = myplocator # lo hago objeto activo
+        if bpy.data.objects['Proyector'].constraints['ChildOf'].influence == 0:
+            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+            myplocator = bpy.data.objects["Locator"]
+            myplocator.select = True
+            bpy.context.scene.objects.active = myplocator # lo hago objeto activo
 
-        myplocator.constraints.new('TRACK_TO')
-        myplocator.constraints["TrackTo"].target = bpy.data.objects["Proyector"]
-        myplocator.constraints["TrackTo"].up_axis = 'UP_Y'
-        myplocator.constraints["TrackTo"].track_axis = 'TRACK_Z'
-
-        bpy.ops.nla.bake(frame_start=1, frame_end=1, step=1, only_selected=True, clear_constraints=True, bake_types={'OBJECT'})
-        bpy.ops.anim.keyframe_clear_v3d()
+            myplocator.constraints.new('TRACK_TO')
+            myplocator.constraints["TrackTo"].target = bpy.data.objects["Proyector"]
+            myplocator.constraints["TrackTo"].up_axis = 'UP_Y'
+            myplocator.constraints["TrackTo"].track_axis = 'TRACK_Z'
+            
+            bpy.ops.nla.bake(frame_start=1, frame_end=1, step=1, only_selected=True, clear_constraints=True, bake_types={'OBJECT'})
+            bpy.ops.anim.keyframe_clear_v3d()
+            
+            # chapuza para q luego el conector vuelva a funcionar juassss
+            myplocator.constraints.new('TRACK_TO')
+            myplocator.constraints["TrackTo"].target = bpy.data.objects["Proyector"]
+            myplocator.constraints["TrackTo"].up_axis = 'UP_Y'
+            myplocator.constraints["TrackTo"].track_axis = 'TRACK_Z'
+            cons = myplocator.constraints['TrackTo']
+            myplocator.constraints["TrackTo"].target = None
+            myplocator.constraints.remove(cons)            
 
         return{'FINISHED'}
     
@@ -533,7 +543,9 @@ class InfluenceK(bpy.types.Operator):
             influencia = bpy.context.object.constraints["ChildOf"].influence #<- truco para q refreske
             bpy.context.object.constraints["ChildOf"].influence = influencia+1 #<- truco para q refreske
             bpy.context.object.constraints["ChildOf"].influence = influencia #<- truco para q refreske
-            #bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+            
+            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+            locator = bpy.data.objects["Locator"]
             locator.select = True # la selecciono
             bpy.context.scene.objects.active = locator
         except:
@@ -557,6 +569,11 @@ class NoInfluencek(bpy.types.Operator):
             bpy.context.object.constraints["ChildOf"].influence = 0
             bpy.data.objects['Proyector'].matrix_world.translation = coordenadas
             #bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+            locator.select = True # la selecciono
+            bpy.context.scene.objects.active = locator
+            
+            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+            locator = bpy.data.objects["Locator"]
             locator.select = True # la selecciono
             bpy.context.scene.objects.active = locator
         except:
