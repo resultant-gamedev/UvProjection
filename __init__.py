@@ -383,10 +383,11 @@ class SelectCam(bpy.types.Operator):
     bl_description = "Easy select Projector-Camera"
 
     def execute(self, context):
-        bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-        myprojector = bpy.data.objects["Proyector"]
-        myprojector.select = True
-        bpy.context.scene.objects.active = myprojector # lo hago objeto activo
+        if "Proyector" in bpy.data.objects:
+            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+            myprojector = bpy.data.objects["Proyector"]
+            myprojector.select = True
+            bpy.context.scene.objects.active = myprojector # lo hago objeto activo
         return{'FINISHED'}
     
 class LockOb(bpy.types.Operator):
@@ -464,28 +465,29 @@ class UpdateRott(bpy.types.Operator):
     bl_description = "Update orientation locator"
 
     def execute(self, context):
-        if bpy.data.objects['Proyector'].constraints['ChildOf'].influence == 0:
-            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-            myplocator = bpy.data.objects["Locator"]
-            myplocator.select = True
-            bpy.context.scene.objects.active = myplocator # lo hago objeto activo
+        if "Locator" in bpy.data.objects:
+            if bpy.data.objects['Proyector'].constraints['ChildOf'].influence == 0:
+                bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+                myplocator = bpy.data.objects["Locator"]
+                myplocator.select = True
+                bpy.context.scene.objects.active = myplocator # lo hago objeto activo
 
-            myplocator.constraints.new('TRACK_TO')
-            myplocator.constraints["TrackTo"].target = bpy.data.objects["Proyector"]
-            myplocator.constraints["TrackTo"].up_axis = 'UP_Y'
-            myplocator.constraints["TrackTo"].track_axis = 'TRACK_Z'
-            
-            bpy.ops.nla.bake(frame_start=1, frame_end=1, step=1, only_selected=True, clear_constraints=True, bake_types={'OBJECT'})
-            bpy.ops.anim.keyframe_clear_v3d()
-            
-            # chapuza para q luego el conector vuelva a funcionar juassss
-            myplocator.constraints.new('TRACK_TO')
-            myplocator.constraints["TrackTo"].target = bpy.data.objects["Proyector"]
-            myplocator.constraints["TrackTo"].up_axis = 'UP_Y'
-            myplocator.constraints["TrackTo"].track_axis = 'TRACK_Z'
-            cons = myplocator.constraints['TrackTo']
-            myplocator.constraints["TrackTo"].target = None
-            myplocator.constraints.remove(cons)            
+                myplocator.constraints.new('TRACK_TO')
+                myplocator.constraints["TrackTo"].target = bpy.data.objects["Proyector"]
+                myplocator.constraints["TrackTo"].up_axis = 'UP_Y'
+                myplocator.constraints["TrackTo"].track_axis = 'TRACK_Z'
+                
+                bpy.ops.nla.bake(frame_start=1, frame_end=1, step=1, only_selected=True, clear_constraints=True, bake_types={'OBJECT'})
+                bpy.ops.anim.keyframe_clear_v3d()
+                
+                # chapuza para q luego el conector vuelva a funcionar juassss
+                myplocator.constraints.new('TRACK_TO')
+                myplocator.constraints["TrackTo"].target = bpy.data.objects["Proyector"]
+                myplocator.constraints["TrackTo"].up_axis = 'UP_Y'
+                myplocator.constraints["TrackTo"].track_axis = 'TRACK_Z'
+                cons = myplocator.constraints['TrackTo']
+                myplocator.constraints["TrackTo"].target = None
+                myplocator.constraints.remove(cons)            
 
         return{'FINISHED'}
     
@@ -529,27 +531,28 @@ class InfluenceK(bpy.types.Operator):
     bl_description = "The projector will influence the locator and projector(camera) maintain the current position"
 
     def execute(self, context):
-        bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-        camara = bpy.data.objects["Proyector"]
-        camara.select = True # la selecciono
-        bpy.context.scene.objects.active = camara
-        locator = bpy.data.objects["Locator"]
-        try:
-            coordenada = bpy.data.objects['Proyector'].matrix_world.translation
-            coordenadas = [coordenada.x,coordenada.y,coordenada.z]
-            bpy.context.object.constraints["ChildOf"].influence = 1
-            bpy.data.objects['Proyector'].matrix_world.translation = coordenadas
-            bpy.ops.constraint.childof_set_inverse(constraint="ChildOf", owner='OBJECT')
-            influencia = bpy.context.object.constraints["ChildOf"].influence #<- truco para q refreske
-            bpy.context.object.constraints["ChildOf"].influence = influencia+1 #<- truco para q refreske
-            bpy.context.object.constraints["ChildOf"].influence = influencia #<- truco para q refreske
-            
+        if "Locator" in bpy.data.objects:        
             bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+            camara = bpy.data.objects["Proyector"]
+            camara.select = True # la selecciono
+            bpy.context.scene.objects.active = camara
             locator = bpy.data.objects["Locator"]
-            locator.select = True # la selecciono
-            bpy.context.scene.objects.active = locator
-        except:
-            pass
+            try:
+                coordenada = bpy.data.objects['Proyector'].matrix_world.translation
+                coordenadas = [coordenada.x,coordenada.y,coordenada.z]
+                bpy.context.object.constraints["ChildOf"].influence = 1
+                bpy.data.objects['Proyector'].matrix_world.translation = coordenadas
+                bpy.ops.constraint.childof_set_inverse(constraint="ChildOf", owner='OBJECT')
+                influencia = bpy.context.object.constraints["ChildOf"].influence #<- truco para q refreske
+                bpy.context.object.constraints["ChildOf"].influence = influencia+1 #<- truco para q refreske
+                bpy.context.object.constraints["ChildOf"].influence = influencia #<- truco para q refreske
+                
+                bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+                locator = bpy.data.objects["Locator"]
+                locator.select = True # la selecciono
+                bpy.context.scene.objects.active = locator
+            except:
+                pass
         return{'FINISHED'}
         
 class NoInfluencek(bpy.types.Operator):
@@ -558,26 +561,27 @@ class NoInfluencek(bpy.types.Operator):
     bl_description = "The projector will not influence the locator and projector(camera) maintain the current position"
     
     def execute(self, context):
-        bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-        camara = bpy.data.objects["Proyector"]
-        camara.select = True # la selecciono
-        bpy.context.scene.objects.active = camara
-        locator = bpy.data.objects["Locator"]
-        try:
-            coordenada = bpy.data.objects['Proyector'].matrix_world.translation
-            coordenadas = [coordenada.x,coordenada.y,coordenada.z]
-            bpy.context.object.constraints["ChildOf"].influence = 0
-            bpy.data.objects['Proyector'].matrix_world.translation = coordenadas
-            #bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-            locator.select = True # la selecciono
-            bpy.context.scene.objects.active = locator
-            
+        if "Locator" in bpy.data.objects:        
             bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+            camara = bpy.data.objects["Proyector"]
+            camara.select = True # la selecciono
+            bpy.context.scene.objects.active = camara
             locator = bpy.data.objects["Locator"]
-            locator.select = True # la selecciono
-            bpy.context.scene.objects.active = locator
-        except:
-            pass
+            try:
+                coordenada = bpy.data.objects['Proyector'].matrix_world.translation
+                coordenadas = [coordenada.x,coordenada.y,coordenada.z]
+                bpy.context.object.constraints["ChildOf"].influence = 0
+                bpy.data.objects['Proyector'].matrix_world.translation = coordenadas
+                #bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+                locator.select = True # la selecciono
+                bpy.context.scene.objects.active = locator
+                
+                bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+                locator = bpy.data.objects["Locator"]
+                locator.select = True # la selecciono
+                bpy.context.scene.objects.active = locator
+            except:
+                pass
         return{'FINISHED'}
     
 class Inverse(bpy.types.Operator):
