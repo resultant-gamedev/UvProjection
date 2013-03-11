@@ -256,31 +256,56 @@ def myshade(todo,ob):
             bpy.ops.object.shade_flat() 
 
 def smoothable():
-    for ob in bpy.context.selected_objects:
-        if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
-            bpy.ops.object.select_all(action='DESELECT')
-            scn = bpy.context.scene
-            scn.objects.active = ob
-            ob.select = True
-            bpy.types.Object.smoothable = bpy.props.IntProperty()
-            ob.smoothable = 1
-            #bpy.context.object["smoothable"] = 1
-            todo = getsettings()
-            myshade(todo[3],ob)
-            bpy.ops.object.select_all(action='DESELECT') 
-
+    if bpy.context.selected_objects:
+        for ob in bpy.context.selected_objects:
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+                bpy.ops.object.select_all(action='DESELECT')
+                scn = bpy.context.scene
+                scn.objects.active = ob
+                ob.select = True
+                bpy.types.Object.smoothable = bpy.props.IntProperty()
+                ob.smoothable = 1
+                #bpy.context.object["smoothable"] = 1
+                todo = getsettings()
+                myshade(todo[3],ob)
+                bpy.ops.object.select_all(action='DESELECT') 
+    else:
+        for ob in bpy.data.objects:
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+                bpy.ops.object.select_all(action='DESELECT')
+                scn = bpy.context.scene
+                scn.objects.active = ob
+                ob.select = True
+                bpy.types.Object.smoothable = bpy.props.IntProperty()
+                ob.smoothable = 1
+                #bpy.context.object["smoothable"] = 1
+                todo = getsettings()
+                myshade(todo[3],ob)
+                bpy.ops.object.select_all(action='DESELECT')
+                
 def dessmoothable():
-    for ob in bpy.context.selected_objects:
-        if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
-            bpy.ops.object.select_all(action='DESELECT')
-            scn = bpy.context.scene
-            scn.objects.active = ob
-            ob.select = True
-            bpy.types.Object.smoothable = bpy.props.IntProperty()
-            ob.smoothable = 0         
-            bpy.ops.wm.properties_remove(data_path="object", property="smoothable")
-            bpy.ops.object.select_all(action='DESELECT') 
-
+    if bpy.context.selected_objects:
+        for ob in bpy.context.selected_objects:
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+                bpy.ops.object.select_all(action='DESELECT')
+                scn = bpy.context.scene
+                scn.objects.active = ob
+                ob.select = True
+                bpy.types.Object.smoothable = bpy.props.IntProperty()
+                ob.smoothable = 0         
+                bpy.ops.wm.properties_remove(data_path="object", property="smoothable")
+                bpy.ops.object.select_all(action='DESELECT') 
+    else:
+        for ob in bpy.data.objects:
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+                bpy.ops.object.select_all(action='DESELECT')
+                scn = bpy.context.scene
+                scn.objects.active = ob
+                ob.select = True
+                bpy.types.Object.smoothable = bpy.props.IntProperty()
+                ob.smoothable = 0         
+                bpy.ops.wm.properties_remove(data_path="object", property="smoothable")
+                bpy.ops.object.select_all(action='DESELECT')
 def delmismooth():
     scn = bpy.context.scene
     for ob in bpy.data.scenes[scn.name].objects:
@@ -517,7 +542,7 @@ class importables(bpy.types.Operator):
 class smoothables(bpy.types.Operator):
     bl_idname = "smoothable.smoothable"
     bl_label = "Smoothable"
-    bl_description = "Add selected objects to my smoothable system manager"
+    bl_description = "Add objects to my smoothable system manager (to selected objects or all)"
     def execute(self, context):
         smoothable()
         return{'FINISHED'}
@@ -525,7 +550,7 @@ class smoothables(bpy.types.Operator):
 class dessmoothables(bpy.types.Operator):
     bl_idname = "dessmoothable.dessmoothable"
     bl_label = "DesSmoothable"
-    bl_description = "Only Remove slected objects from my smoothable system manager, not smooths"
+    bl_description = "Only Remove objects from my smoothable system manager, not smooths (to selected objects or all)"
     def execute(self, context):
         dessmoothable()
         return{'FINISHED'}
