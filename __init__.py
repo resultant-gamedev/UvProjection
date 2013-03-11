@@ -335,7 +335,8 @@ def delmismooth():
                 if existe:
                     nombre = ob.modifiers[donde].name
                     bpy.ops.object.modifier_remove(modifier=nombre)
-                    myshade(todo[3],ob)
+                    #myshade(todo[3],ob)
+                    bpy.ops.object.shade_flat()
             bpy.ops.object.select_all(action='DESELECT') 
 
 def mismooth():
