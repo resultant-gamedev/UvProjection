@@ -365,7 +365,7 @@ def mismooth():
                     for i in range(len(modificadores)):
                         bpy.ops.object.modifier_move_up(modifier=nombre)
                     
-                bpy.ops.object.select_all(action='DESELECT')
+            bpy.ops.object.select_all(action='DESELECT')
             
 def updatesmooth():
     scn = bpy.context.scene
