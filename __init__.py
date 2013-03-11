@@ -276,11 +276,7 @@ def dessmoothable():
             scn.objects.active = ob
             ob.select = True
             bpy.types.Object.smoothable = bpy.props.IntProperty()
-            ob.smoothable = 0
-            #bpy.context.object["smoothable"] = 0
-            bpy.ops.object.modifier_remove(modifier="Subsurf")
-            #todo = getsettings()
-            myshade(False,ob)
+            ob.smoothable = 0         
             bpy.ops.wm.properties_remove(data_path="object", property="smoothable")
             bpy.ops.object.select_all(action='DESELECT') 
 
@@ -294,13 +290,26 @@ def delmismooth():
             ob.select = True
             #if ob.get("smoothable") == 1: # vale tanto get, como .propiedad
             todo = getsettings()
-            if "smoothable" in ob:
-                if ob.get("smoothable") == 1:
-                #if ob.smoothable == 1:
-                    if 'Subsurf' in ob.modifiers:
-                        bpy.ops.object.modifier_remove(modifier="Subsurf")
-                        #ob.smoothable = 0
-                myshade(todo[3],ob)
+            
+            modificadores = []
+            for mod in ob.modifiers:
+                modificadores.append(mod)
+                
+            if "smoothable" in ob and ob.smoothable == 1:
+                indice = 0
+                existe = False
+                while (not existe and indice < len(modificadores)):
+                    if ob.modifiers[indice].type == 'SUBSURF':
+                        existe = True
+                        donde = indice
+                    else:
+                        existe = False
+                    indice += 1
+                    
+                if existe:
+                    nombre = ob.modifiers[donde].name
+                    bpy.ops.object.modifier_remove(modifier=nombre)
+                    myshade(todo[3],ob)
             bpy.ops.object.select_all(action='DESELECT') 
 
 def mismooth():
@@ -337,6 +346,11 @@ def mismooth():
                         ob.modifiers['Subsurf'].subdivision_type = 'SIMPLE'
                     else:
                         ob.modifiers['Subsurf'].subdivision_type = 'CATMULL_CLARK'
+                    
+                    nombre = 'Subsurf'
+                    for i in range(len(modificadores)):
+                        bpy.ops.object.modifier_move_up(modifier=nombre)
+                        
                 else:
                     myshade(todo[3],ob)
                     ob.modifiers[donde].levels = todo[0]
@@ -346,6 +360,10 @@ def mismooth():
                         ob.modifiers[donde].subdivision_type = 'SIMPLE'
                     else:
                         ob.modifiers[donde].subdivision_type = 'CATMULL_CLARK'
+                        
+                    nombre = 'Subsurf'
+                    for i in range(len(modificadores)):
+                        bpy.ops.object.modifier_move_up(modifier=nombre)
                     
                 bpy.ops.object.select_all(action='DESELECT')
             
@@ -382,7 +400,12 @@ def updatesmooth():
                         ob.modifiers[donde].subdivision_type = 'SIMPLE'
                     else:
                         ob.modifiers[donde].subdivision_type = 'CATMULL_CLARK'
-                bpy.ops.object.select_all(action='DESELECT') 
+                        
+                    nombre = ob.modifiers[donde].name
+                    for i in range(len(modificadores)):
+                        bpy.ops.object.modifier_move_up(modifier=nombre)
+                        
+            bpy.ops.object.select_all(action='DESELECT') 
 
 def importar():
     scn = bpy.context.scene
@@ -410,6 +433,7 @@ def importar():
             if existe:
                 bpy.types.Object.smoothable = bpy.props.IntProperty()
                 ob.smoothable = 1
+                    
                 myshade(todo[3],ob)
                 ob.modifiers[donde].levels = todo[0]
                 ob.modifiers[donde].render_levels = todo[1]
@@ -418,6 +442,11 @@ def importar():
                     ob.modifiers[donde].subdivision_type = 'SIMPLE'
                 else:
                     ob.modifiers[donde].subdivision_type = 'CATMULL_CLARK'
+                
+                nombre = ob.modifiers[donde].name
+                for i in range(len(modificadores)):
+                    bpy.ops.object.modifier_move_up(modifier=nombre)
+            
             bpy.ops.object.select_all(action='DESELECT') 
 
 def clearsm():
@@ -428,9 +457,26 @@ def clearsm():
             scn.objects.active = ob
             ob.select = True
             todo = getsettings()
-            if "smoothable" in ob:
-                if 'Subsurf' in ob.modifiers:
-                    bpy.ops.object.modifier_remove(modifier="Subsurf")
+            
+            modificadores = []
+            for mod in ob.modifiers:
+                modificadores.append(mod)
+                
+            if "smoothable" in ob and ob.smoothable == 1:
+                indice = 0
+                existe = False
+                while (not existe and indice < len(modificadores)):
+                    if ob.modifiers[indice].type == 'SUBSURF':
+                        existe = True
+                        donde = indice
+                    else:
+                        existe = False
+                    indice += 1
+                    
+                if existe:
+                    nombre = ob.modifiers[donde].name
+                    bpy.ops.object.modifier_remove(modifier=nombre)
+                
                 ob.smoothable = 0
                 bpy.ops.object.shade_flat()
                 bpy.ops.wm.properties_remove(data_path="object", property="smoothable")
@@ -463,7 +509,7 @@ class smoothables(bpy.types.Operator):
 class dessmoothables(bpy.types.Operator):
     bl_idname = "dessmoothable.dessmoothable"
     bl_label = "DesSmoothable"
-    bl_description = "Remove slected objects from my smoothable system manager, and remove: smooth, wire, shade_smooth"
+    bl_description = "Only Remove slected objects from my smoothable system manager, not smooths"
     def execute(self, context):
         dessmoothable()
         return{'FINISHED'}
