@@ -132,6 +132,8 @@ class Botones_UVProjection(bpy.types.Panel):
         #col.operator("object.custom_path")
         #col.prop(context.scene,"IBPath")
         
+        col.label("Load Images:")
+        
         #Al crear una nueva escena con ctrl + n el addon no se recargaba y el comodin no se volvia a crear, de esta manera si no esta se crea:
         try:
             # primero intento de manera normal:
@@ -162,7 +164,7 @@ class Botones_UVProjection(bpy.types.Panel):
         # bpy.context.scene.camera.data.name = "grr"
         '''
         
-        col.label("Apply projections:")
+        col.label("Apply Projections:")
         #col.operator("ol.ol", text='(Only) load image to blender')
         col.operator("toselected.toselected", text='To Selected')
         col.operator("mod.mod", text='To ALL')
