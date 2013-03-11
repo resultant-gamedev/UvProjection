@@ -94,8 +94,8 @@ def mySceneProperties():
     bpy.types.Scene.IBPath = bpy.props.StringProperty(name="", attr="custompath", description="Base Image Path", maxlen= 1024, default="")
     
     # smoothable #########################################################################################:
-    bpy.types.Scene.Levelv = bpy.props.IntProperty( name = "Level View", default = 1, min = 0, max = 3)
-    bpy.types.Scene.Levelr = bpy.props.IntProperty( name = "Level Render", default = 1, min = 0, max = 3)
+    bpy.types.Scene.Levelv = bpy.props.IntProperty( name = "Level View", default = 1, min = 0, max = 6)
+    bpy.types.Scene.Levelr = bpy.props.IntProperty( name = "Level Render", default = 1, min = 0, max = 6)
     bpy.types.Scene.ODisplay = bpy.props.BoolProperty( name = "Optimal Display", description = "Active optimal display", default=True)
     bpy.types.Scene.Soften = bpy.props.BoolProperty( name = "Soften normals", description = "Active smooth shade", default=False)
     bpy.types.Scene.Typealg = bpy.props.BoolProperty( name = "Simple", description = "Subdivision Algorithm Simple",default=True)
