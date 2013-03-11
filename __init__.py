@@ -303,58 +303,88 @@ def delmismooth():
 
 def mismooth():
     scn = bpy.context.scene
+    todo = getsettings()
     for ob in bpy.data.scenes[scn.name].objects:
         if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
             bpy.ops.object.select_all(action='DESELECT')
             scn.objects.active = ob
             ob.select = True
-            #if ob.get("smoothable") == 1: # vale tanto get, como .propiedad
-            todo = getsettings()
-            if "smoothable" in ob:
-                if ob.get("smoothable") == 1:
-                #if ob.smoothable == 1:
-                    if 'Subsurf' not in ob.modifiers:
-                        bpy.ops.object.modifier_add(type='SUBSURF')
-                        #ob.modifiers['Subsurf'].levels = scn['Levelv']
-                        ob.modifiers['Subsurf'].levels = todo[0]
-                        #ob.modifiers['Subsurf'].render_levels = scn['Levelr']
-                        ob.modifiers['Subsurf'].render_levels = todo[1]
-                        ob.modifiers['Subsurf'].show_only_control_edges = todo[2]
-                        if scn.Typealg:
-                            ob.modifiers['Subsurf'].subdivision_type = 'SIMPLE'
-                        else:
-                            ob.modifiers['Subsurf'].subdivision_type = 'CATMULL_CLARK'
-                myshade(todo[3],ob)
-            bpy.ops.object.select_all(action='DESELECT') 
-
+        
+            modificadores = []
+            for mod in ob.modifiers:
+                modificadores.append(mod)
+                
+            if "smoothable" in ob and ob.smoothable == 1:
+                indice = 0
+                existe = False
+                while (not existe and indice < len(modificadores)):
+                    if mod.type == 'SUBSURF':
+                        existe = True
+                        donde = modificadores.index(mod)
+                    else:
+                        existe = False
+                    indice += 1
+            
+                if not existe:
+                    bpy.ops.object.modifier_add(type='SUBSURF')
+                    myshade(todo[3],ob)
+                    ob.modifiers['Subsurf'].levels = todo[0]
+                    ob.modifiers['Subsurf'].render_levels = todo[1]
+                    ob.modifiers['Subsurf'].show_only_control_edges = todo[2]
+                    if scn.Typealg:
+                        ob.modifiers['Subsurf'].subdivision_type = 'SIMPLE'
+                    else:
+                        ob.modifiers['Subsurf'].subdivision_type = 'CATMULL_CLARK'
+                else:
+                    myshade(todo[3],ob)
+                    ob.modifiers[donde].levels = todo[0]
+                    ob.modifiers[donde].render_levels = todo[1]
+                    ob.modifiers[donde].show_only_control_edges = todo[2]
+                    if scn.Typealg:
+                        ob.modifiers[donde].subdivision_type = 'SIMPLE'
+                    else:
+                        ob.modifiers[donde].subdivision_type = 'CATMULL_CLARK'
+                    
+                bpy.ops.object.select_all(action='DESELECT')
+            
 def updatesmooth():
     scn = bpy.context.scene
+    todo = getsettings()
     for ob in bpy.data.scenes[scn.name].objects:
         if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
             bpy.ops.object.select_all(action='DESELECT')
             scn.objects.active = ob
             ob.select = True
-            #if ob.get("smoothable") == 1: # vale tanto get, como .propiedad
-            todo = getsettings()
-            if "smoothable" in ob:
-                if ob.get("smoothable") == 1:
-                #if ob.smoothable == 1:
-                    if 'Subsurf' in ob.modifiers:
-                        #ob.modifiers['Subsurf'].levels = scn['Levelv']
-                        ob.modifiers['Subsurf'].levels = todo[0]
-                        #ob.modifiers['Subsurf'].render_levels = scn['Levelr']
-                        ob.modifiers['Subsurf'].render_levels = todo[1]
-                        ob.modifiers['Subsurf'].show_only_control_edges = todo[2]
-                        if scn.Typealg:
-                            ob.modifiers['Subsurf'].subdivision_type = 'SIMPLE'
-                        else:
-                            ob.modifiers['Subsurf'].subdivision_type = 'CATMULL_CLARK'
-                myshade(todo[3],ob)
-            bpy.ops.object.select_all(action='DESELECT') 
+            
+            modificadores = []
+            for mod in ob.modifiers:
+                modificadores.append(mod)
+                
+            if "smoothable" in ob and ob.smoothable == 1:
+                indice = 0
+                existe = False
+                while (not existe and indice < len(modificadores)):
+                    if mod.type == 'SUBSURF':
+                        existe = True
+                        donde = modificadores.index(mod)
+                    else:
+                        existe = False
+                    indice += 1
+            
+                if existe:
+                    myshade(todo[3],ob)
+                    ob.modifiers[donde].levels = todo[0]
+                    ob.modifiers[donde].render_levels = todo[1]
+                    ob.modifiers[donde].show_only_control_edges = todo[2]
+                    if scn.Typealg:
+                        ob.modifiers[donde].subdivision_type = 'SIMPLE'
+                    else:
+                        ob.modifiers[donde].subdivision_type = 'CATMULL_CLARK'
+                bpy.ops.object.select_all(action='DESELECT') 
 
 def importar():
-    todo = getsettings()
     scn = bpy.context.scene
+    todo = getsettings()
     for ob in bpy.data.scenes[scn.name].objects:
         if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
             bpy.ops.object.select_all(action='DESELECT')
@@ -364,10 +394,7 @@ def importar():
                 if mod.type == 'SUBSURF':           
                     bpy.types.Object.smoothable = bpy.props.IntProperty()
                     ob.smoothable = 1
-                    #bpy.context.object["smoothable"] = 1
-                    #ob.modifiers['Subsurf'].levels = scn['Levelv']
                     ob.modifiers['Subsurf'].levels = todo[0]
-                    #ob.modifiers['Subsurf'].render_levels = scn['Levelr']
                     ob.modifiers['Subsurf'].render_levels = todo[1]
                     ob.modifiers['Subsurf'].show_only_control_edges = todo[2]
                     if scn.Typealg:
@@ -375,7 +402,7 @@ def importar():
                     else:
                         ob.modifiers['Subsurf'].subdivision_type = 'CATMULL_CLARK'
                     myshade(todo[3],ob)
-            bpy.ops.object.select_all(action='DESELECT') 
+                    bpy.ops.object.select_all(action='DESELECT') 
 
 def clearsm():
     scn = bpy.context.scene
