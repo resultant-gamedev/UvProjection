@@ -320,9 +320,9 @@ def mismooth():
                 indice = 0
                 existe = False
                 while (not existe and indice < len(modificadores)):
-                    if mod.type == 'SUBSURF':
+                    if ob.modifiers[indice].type == 'SUBSURF':
                         existe = True
-                        donde = modificadores.index(mod)
+                        donde = indice
                     else:
                         existe = False
                     indice += 1
@@ -366,9 +366,9 @@ def updatesmooth():
                 indice = 0
                 existe = False
                 while (not existe and indice < len(modificadores)):
-                    if mod.type == 'SUBSURF':
+                    if ob.modifiers[indice].type == 'SUBSURF':
                         existe = True
-                        donde = modificadores.index(mod)
+                        donde = indice
                     else:
                         existe = False
                     indice += 1
@@ -392,19 +392,33 @@ def importar():
             bpy.ops.object.select_all(action='DESELECT')
             scn.objects.active = ob
             ob.select = True
+            
+            modificadores = []
             for mod in ob.modifiers:
-                if mod.type == 'SUBSURF':           
-                    bpy.types.Object.smoothable = bpy.props.IntProperty()
-                    ob.smoothable = 1
-                    ob.modifiers['Subsurf'].levels = todo[0]
-                    ob.modifiers['Subsurf'].render_levels = todo[1]
-                    ob.modifiers['Subsurf'].show_only_control_edges = todo[2]
-                    if scn.Typealg:
-                        ob.modifiers['Subsurf'].subdivision_type = 'SIMPLE'
-                    else:
-                        ob.modifiers['Subsurf'].subdivision_type = 'CATMULL_CLARK'
-                    myshade(todo[3],ob)
-                    bpy.ops.object.select_all(action='DESELECT') 
+                modificadores.append(mod)
+            
+            indice = 0
+            existe = False
+            while (not existe and indice < len(modificadores)):
+                if ob.modifiers[indice].type == 'SUBSURF':
+                    existe = True
+                    donde = indice
+                else:
+                    existe = False
+                indice += 1
+            
+            if existe:
+                bpy.types.Object.smoothable = bpy.props.IntProperty()
+                ob.smoothable = 1
+                myshade(todo[3],ob)
+                ob.modifiers[donde].levels = todo[0]
+                ob.modifiers[donde].render_levels = todo[1]
+                ob.modifiers[donde].show_only_control_edges = todo[2]
+                if scn.Typealg:
+                    ob.modifiers[donde].subdivision_type = 'SIMPLE'
+                else:
+                    ob.modifiers[donde].subdivision_type = 'CATMULL_CLARK'
+            bpy.ops.object.select_all(action='DESELECT') 
 
 def clearsm():
     scn = bpy.context.scene
