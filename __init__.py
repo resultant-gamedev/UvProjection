@@ -322,6 +322,8 @@ def mismooth():
                         ob.modifiers['Subsurf'].show_only_control_edges = todo[2]
                         if scn.Typealg:
                             ob.modifiers['Subsurf'].subdivision_type = 'SIMPLE'
+                        else:
+                            ob.modifiers['Subsurf'].subdivision_type = 'CATMULL_CLARK'
                 myshade(todo[3],ob)
             bpy.ops.object.select_all(action='DESELECT') 
 
@@ -345,6 +347,8 @@ def updatesmooth():
                         ob.modifiers['Subsurf'].show_only_control_edges = todo[2]
                         if scn.Typealg:
                             ob.modifiers['Subsurf'].subdivision_type = 'SIMPLE'
+                        else:
+                            ob.modifiers['Subsurf'].subdivision_type = 'CATMULL_CLARK'
                 myshade(todo[3],ob)
             bpy.ops.object.select_all(action='DESELECT') 
 
@@ -356,14 +360,21 @@ def importar():
             bpy.ops.object.select_all(action='DESELECT')
             scn.objects.active = ob
             ob.select = True
-            if 'Subsurf' in ob.modifiers:
-                bpy.types.Object.smoothable = bpy.props.IntProperty()
-                ob.smoothable = 1
-                #bpy.context.object["smoothable"] = 1
-                ob.modifiers['Subsurf'].show_only_control_edges = todo[2]
-                if scn.Typealg:
-                            ob.modifiers['Subsurf'].subdivision_type = 'SIMPLE'
-                myshade(todo[3],ob)
+            for mod in ob.modifiers:
+                if mod.type == 'SUBSURF':           
+                    bpy.types.Object.smoothable = bpy.props.IntProperty()
+                    ob.smoothable = 1
+                    #bpy.context.object["smoothable"] = 1
+                    #ob.modifiers['Subsurf'].levels = scn['Levelv']
+                    ob.modifiers['Subsurf'].levels = todo[0]
+                    #ob.modifiers['Subsurf'].render_levels = scn['Levelr']
+                    ob.modifiers['Subsurf'].render_levels = todo[1]
+                    ob.modifiers['Subsurf'].show_only_control_edges = todo[2]
+                    if scn.Typealg:
+                        ob.modifiers['Subsurf'].subdivision_type = 'SIMPLE'
+                    else:
+                        ob.modifiers['Subsurf'].subdivision_type = 'CATMULL_CLARK'
+                    myshade(todo[3],ob)
             bpy.ops.object.select_all(action='DESELECT') 
 
 def clearsm():
@@ -454,7 +465,7 @@ class SelectCam(bpy.types.Operator):
 class LockOb(bpy.types.Operator):
     bl_idname = "lock.lock"    
     bl_label = "Lock"
-    bl_description = "Lock objects"
+    bl_description = "Lock objects (in selected objects or all)"
     def execute(self, context):
         
         if bpy.context.selected_objects:
@@ -475,7 +486,7 @@ class LockOb(bpy.types.Operator):
 class UnLockOb(bpy.types.Operator):
     bl_idname = "unlock.unlock"    
     bl_label = "Lock"
-    bl_description = "UnLock objects"
+    bl_description = "UnLock objects (in selected objects or all)"
     def execute(self, context):
         
         if bpy.context.selected_objects:
@@ -496,7 +507,7 @@ class UnLockOb(bpy.types.Operator):
 class WireOn(bpy.types.Operator):
     bl_idname = "setwire.setwire"    
     bl_label = "Set wireframe mode On"
-    bl_description = "Set wireframe mode On"
+    bl_description = "Set wireframe mode On (in selected objects or all)"
     def execute(self, context):
         if bpy.context.selected_objects:
             for o in bpy.context.selected_objects:
@@ -509,7 +520,7 @@ class WireOn(bpy.types.Operator):
 class WireOff(bpy.types.Operator):
     bl_idname = "unsetwire.unsetwire"
     bl_label = "UnSet wireframe mode Off"
-    bl_description = "Set wireframe mode Off"
+    bl_description = "Set wireframe mode Off (in selected objects or all)"
     
     def execute(self, context):
         if bpy.context.selected_objects:
