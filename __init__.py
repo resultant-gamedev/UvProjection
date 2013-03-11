@@ -87,12 +87,21 @@ p = Proyector()
 tc = Tipocoordenadas()
 up = Update()
 
-# para el listado de objetos esto es necesario:
-# son como propiedades para el item de interfaz:
-bpy.types.Object.Proyector = bpy.props.StringProperty()
-bpy.types.Scene.IBPath = bpy.props.StringProperty(name="", attr="custompath", description="Base Image Path", maxlen= 1024, default="")
-bpy.types.Scene.My_int_smooth = bpy.props.IntProperty(default=2)
+def mySceneProperties():
+    # para el listado de objetos esto es necesario:
+    # son como propiedades para el item de interfaz:
+    bpy.types.Object.Proyector = bpy.props.StringProperty()
+    bpy.types.Scene.IBPath = bpy.props.StringProperty(name="", attr="custompath", description="Base Image Path", maxlen= 1024, default="")
+    
+    # smoothable #########################################################################################:
+    bpy.types.Scene.Levelv = bpy.props.IntProperty( name = "Level View", default = 1, min = 0, max = 3)
+    bpy.types.Scene.Levelr = bpy.props.IntProperty( name = "Level Render", default = 1, min = 0, max = 3)
+    bpy.types.Scene.ODisplay = bpy.props.BoolProperty( name = "Optimal Display", description = "Active optimal display", default=True)
+    bpy.types.Scene.Soften = bpy.props.BoolProperty( name = "Soften normals", description = "Active smooth shade", default=False)
+    bpy.types.Scene.Typealg = bpy.props.BoolProperty( name = "Simple", description = "Subdivision Algorithm Simple",default=True)
+    # fin smoothable ######################################################################################
 
+mySceneProperties()
 
 # intento de hacer un boton de reload addon (pero no tiene mucho sentido crear este boton)
 #def restart_addon():
@@ -112,6 +121,7 @@ class Botones_UVProjection(bpy.types.Panel):
         row = layout.row(align=True)
         col = row.column()
         col.alignment = 'EXPAND'
+        scn = context.scene
         
         # el comodin contiene la imagen actual del loader.
         comodin = bpy.data.textures.new(type='IMAGE', name='comodin')
@@ -152,8 +162,17 @@ class Botones_UVProjection(bpy.types.Panel):
         # bpy.context.scene.camera.data.name = "grr"
         '''
         
-        # para el modo de coordenadas:
-        col.label("Handlers Orientations:")
+        col.label("Apply projections:")
+        #col.operator("ol.ol", text='(Only) load image to blender')
+        col.operator("toselected.toselected", text='To Selected')
+        col.operator("mod.mod", text='To ALL')
+        #col.operator("unwrapeado.unwrapeado", text='(Only) Auto UnWrap for all')
+        col.operator("uprel.uprel", text='Material //-// Render  -  Update')
+
+        col.label("Objects:")
+        
+        # para el modo de coordenadas ########################################:
+        #col.label("Handlers Orientations:")
         view = context.space_data
         orientation = view.current_orientation
 
@@ -166,32 +185,42 @@ class Botones_UVProjection(bpy.types.Panel):
             col.operator("transform.delete_orientation", text="", icon="X")
         # fin modo coordenadas ################################################
         
-        col.label("Apply projections:")
-        #col.operator("ol.ol", text='(Only) load image to blender')
-        col.operator("toselected.toselected", text='To Selected')
-        col.operator("mod.mod", text='To ALL')
-        #col.operator("unwrapeado.unwrapeado", text='(Only) Auto UnWrap for all')
-        col.operator("uprel.uprel", text='Material //-// Render  -  Update')
-
-        col.label("Objects:")
-        col.prop(context.scene,"My_int_smooth", text="Resolution: ")
-        col.operator("setupdatesmooth.setupdatesmooth", text='Apply/Update  -  Resolution')
-        col.operator("importsmooth.importsmooth", text='Smooths  -  Import')
-        col.operator("delsmooth.delsmooth", text='Resolutions  -  Remove ')
-        
-        # wire:
-        subrow0 = col.row(align=True)
-        subrow0.operator("unsetwire.unsetwire", text='Wire Off')
-        subrow0.operator("setwire.setwire", text='Wire On')
-        
         # select camera:
         col.operator("selctcam.selctcam", text='projector-(camera)  -  Select')
         
         # lock unlock:
-        subrow1 = col.row(align=True)
-        subrow1.operator("unlock.unlock", text='Unlock')
-        subrow1.operator("lock.lock", text='Lock')
+        subrow3 = col.row(align=True)
+        subrow3.operator("lock.lock", text='Lock')
+        subrow3.operator("unlock.unlock", text='Unlock')
 
+        # smoothable #############################################################:
+        col.label("Settings Display:")
+        subrow0 = col.row(align=True)
+        subrow0.operator("smoothable.smoothable", text='Smoothable')
+        subrow0.operator("dessmoothable.dessmoothable", text='DeSmoothable')
+        
+        col.prop(scn, 'ODisplay')
+        col.prop(scn, 'Soften')
+        col.prop(scn, 'Typealg', toggle=True)
+        
+        # wire:
+        subrow2 = col.row(align=True)
+        subrow2.operator("setwire.setwire", text='Wire On')
+        subrow2.operator("unsetwire.unsetwire", text='Wire Off')
+        
+        subrow1 = col.row(align=True)
+        subrow1.operator("allsmooth.allsmooth", text='All Smooth')
+        subrow1.operator("upsetigs.upsetings", text='Update')
+
+        col.prop(scn, 'Levelv', toggle=True)
+        col.prop(scn, 'Levelr', toggle=True)
+
+        col.operator("delsmooth.delsmooth", text='DelAllSmooth')
+        
+        col.operator("stosmooth.stosmooth", text='Smooths to Smoothable')
+        col.operator("clearsm.clearsm", text='Remove all smoothables')
+        # fin smoothable ##########################################################
+        
         col.label("Camera/Locator settings:")
         
         col.operator("updaterot.updaterot", text='Locator  -  Update Orientations')
@@ -204,7 +233,6 @@ class Botones_UVProjection(bpy.types.Panel):
         #subrow2 = col.row(align=True)
         #subrow2.operator("setinverse.setinverse", text='Set inverse')
         #subrow2.operator("clearinverse.clearinverse", text='Clear inverse')
-        
 
 def imagen():
     #img = bpy.data.images.load(filepath=bpy.context.scene.IBPath)
@@ -212,171 +240,204 @@ def imagen():
     #img.use_premultiply = True
     return img
 
-def para_resolucion(opcion):
-    valors = bpy.context.scene.My_int_smooth    
-    if opcion == 'seleccionados':
-        for ob in bpy.context.selected_objects:
-            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META' or ob.type == 'CURVE' or ob.type == 'FONT':
-                if 'MySubsurf' not in ob.modifiers:
-                    # comprobando si tiene algun subsurf:
-                    indice = 0
-                    existe = False
-                    while (not existe and indice < len(ob.modifiers)):
-                        if ob.modifiers[indice].type == 'SUBSURF':
-                            existe = True
-                        indice +=1
-                        
-                    bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-                    myprojector = bpy.data.objects[ob.name]
-                    myprojector.select = True
-                    bpy.context.scene.objects.active = myprojector # lo hago objeto activo
-
-                    # si no tiene ningun subsurf anterior:        
-                    if not existe:
-                        bpy.ops.object.subdivision_set(level=valors, relative=False)
-                        if len(ob.modifiers) >= 1:
-                            lastmod = ob.modifiers[len(ob.modifiers)-1]
-
-                            if lastmod.type == 'SUBSURF':
-                                lastmod.name = 'MySubsurf'
-                                ob.modifiers["MySubsurf"].subdivision_type = 'SIMPLE'
-                                ob.modifiers["MySubsurf"].show_only_control_edges = True
-                                ob.modifiers["MySubsurf"].show_in_editmode = False
-
-                        # creando lista de modificadores
-                        modificadores = []
-                        for mod in ob.modifiers:
-                            modificadores.append(mod)
-                        
-                        # si existen otros modificadores lo comprobamos
-                        if len(modificadores) > 1: # y si existen subimos un nivel por cada modificador (para posicionarlo arriba del todo):
-                            for i in range(len(modificadores)):
-                                bpy.ops.object.modifier_move_up(modifier="MySubsurf")
-                else:
-                    # creando lista de modificadores
-                    modificadores = []
-                    for mod in ob.modifiers:
-                        modificadores.append(mod)
-                    
-                    for am in modificadores:
-                        if am.type == 'SUBSURF':
-                            if am.name == 'MySubsurf':
-                                am.name = 'MySubsurf'
-                                am.levels = valors
-                                am.subdivision_type = 'SIMPLE'
-                                am.show_only_control_edges = True
-                                am.show_in_editmode = False
-                               
-                    # si existen otros modificadores lo comprobamos
-                    if len(modificadores) > 1: # y si existen subimos un nivel por cada modificador (para posicionarlo arriba del todo):
-                        for i in range(len(modificadores)):
-                            bpy.ops.object.modifier_move_up(modifier="MySubsurf")
-        
-    else:
-        for ob in bpy.context.scene.objects:
-            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META' or ob.type == 'CURVE' or ob.type == 'FONT':
-                    
-                if 'MySubsurf' not in ob.modifiers:
-                    # comprobando si tiene algun subsurf:
-                    indice = 0
-                    existe = False
-                    while (not existe and indice < len(ob.modifiers)):
-                        if ob.modifiers[indice].type == 'SUBSURF':
-                            existe = True
-                        indice +=1
-                        
-                    bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-                    myprojector = bpy.data.objects[ob.name]
-                    myprojector.select = True
-                    bpy.context.scene.objects.active = myprojector # lo hago objeto activo
-
-                    # si no tiene ningun subsurf anterior:        
-                    if not existe:
-                        bpy.ops.object.subdivision_set(level=valors, relative=False)
-                        if len(ob.modifiers) >= 1:
-                            lastmod = ob.modifiers[len(ob.modifiers)-1]
-
-                            if lastmod.type == 'SUBSURF':
-                                lastmod.name = 'MySubsurf'
-                                ob.modifiers["MySubsurf"].subdivision_type = 'SIMPLE'
-                                ob.modifiers["MySubsurf"].show_only_control_edges = True
-                                ob.modifiers["MySubsurf"].show_in_editmode = False
-
-                        # creando lista de modificadores
-                        modificadores = []
-                        for mod in ob.modifiers:
-                            modificadores.append(mod)
-                        
-                        # si existen otros modificadores lo comprobamos
-                        if len(modificadores) > 1: # y si existen subimos un nivel por cada modificador (para posicionarlo arriba del todo):
-                            for i in range(len(modificadores)):
-                                bpy.ops.object.modifier_move_up(modifier="MySubsurf")
-                else:
-                    # creando lista de modificadores
-                    modificadores = []
-                    for mod in ob.modifiers:
-                        modificadores.append(mod)
-                    
-                    for am in modificadores:
-                        if am.type == 'SUBSURF':
-                            if am.name == 'MySubsurf':
-                                am.name = 'MySubsurf'
-                                am.levels = valors
-                                am.subdivision_type = 'SIMPLE'
-                                am.show_only_control_edges = True
-                                am.show_in_editmode = False
-                                
-                    # si existen otros modificadores lo comprobamos
-                    if len(modificadores) > 1: # y si existen subimos un nivel por cada modificador (para posicionarlo arriba del todo):
-                        for i in range(len(modificadores)):
-                            bpy.ops.object.modifier_move_up(modifier="MySubsurf")
-
-class DelSmooth(bpy.types.Operator):
-    bl_idname = "delsmooth.delsmooth"
-    bl_label = "Del Resolution"
-    bl_description = "Remove all resolution smooths"
-    def execute(self, context):
-        for ob in bpy.context.scene.objects:
-            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META' or ob.type == 'CURVE' or ob.type == 'FONT':
-                bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-                myprojector = bpy.data.objects[ob.name]
-                myprojector.select = True
-                bpy.context.scene.objects.active = myprojector # lo hago objeto activo
-                for mod in ob.modifiers:
-                    if mod.type == 'SUBSURF':
-                        if mod.name == 'MySubsurf':
-                            bpy.ops.object.modifier_remove(modifier="MySubsurf")
-        return{'FINISHED'}
-                            
-class ImportSmooth(bpy.types.Operator):
-    bl_idname = "importsmooth.importsmooth"
-    bl_label = "Import smooth"
-    bl_description = "rename all Subsurf to MySubsurf for work in my resolution system"
-    def execute(self, context):
-        for ob in bpy.data.objects:
-            for mod in ob.modifiers:
-                if mod.type == 'SUBSURF':
-                    if mod.name != 'MySubsurf':
-                        mod.name = 'MySubsurf'
-        bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-        return{'FINISHED'}
-                 
-class UpdateAddSmooth(bpy.types.Operator):
-    bl_idname = "setupdatesmooth.setupdatesmooth"
-    bl_label = "Resolution Add/Update"
-    bl_description = "Add/update all smooths. If have a previous subsurf, dont it does nothing, except if you rename this to Mysubsurf"
-
-    def execute(self, context):
-        if bpy.context.selected_objects:
-            opcion = 'seleccionados'
-            para_resolucion(opcion)
-            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+def getsettings():
+    scn = bpy.context.scene
+    todo = [int(scn.Levelv), int(scn.Levelr), scn.ODisplay, scn.Soften]
+    return todo
+    
+def myshade(todo,ob):
+    if "smoothable" in ob:
+        if todo == True:
+            bpy.ops.object.shade_smooth()
         else:
-            opcion = 'all'
-            para_resolucion(opcion)
-            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+            bpy.ops.object.shade_flat() 
+
+def smoothable():
+    for ob in bpy.context.selected_objects:
+        if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+            bpy.ops.object.select_all(action='DESELECT')
+            scn = bpy.context.scene
+            scn.objects.active = ob
+            ob.select = True
+            bpy.types.Object.smoothable = bpy.props.IntProperty()
+            ob.smoothable = 1
+            #bpy.context.object["smoothable"] = 1
+            todo = getsettings()
+            myshade(todo[3],ob)
+            bpy.ops.object.select_all(action='DESELECT') 
+
+def dessmoothable():
+    for ob in bpy.context.selected_objects:
+        if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+            bpy.ops.object.select_all(action='DESELECT')
+            scn = bpy.context.scene
+            scn.objects.active = ob
+            ob.select = True
+            bpy.types.Object.smoothable = bpy.props.IntProperty()
+            ob.smoothable = 0
+            #bpy.context.object["smoothable"] = 0
+            bpy.ops.object.modifier_remove(modifier="Subsurf")
+            #todo = getsettings()
+            myshade(False,ob)
+            bpy.ops.wm.properties_remove(data_path="object", property="smoothable")
+            bpy.ops.object.select_all(action='DESELECT') 
+
+def delmismooth():
+    scn = bpy.context.scene
+    for ob in bpy.data.scenes[scn.name].objects:
+        if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+            bpy.ops.object.select_all(action='DESELECT')
+            scn = bpy.context.scene
+            scn.objects.active = ob
+            ob.select = True
+            #if ob.get("smoothable") == 1: # vale tanto get, como .propiedad
+            todo = getsettings()
+            if "smoothable" in ob:
+                if ob.get("smoothable") == 1:
+                #if ob.smoothable == 1:
+                    if 'Subsurf' in ob.modifiers:
+                        bpy.ops.object.modifier_remove(modifier="Subsurf")
+                        #ob.smoothable = 0
+                myshade(todo[3],ob)
+            bpy.ops.object.select_all(action='DESELECT') 
+
+def mismooth():
+    scn = bpy.context.scene
+    for ob in bpy.data.scenes[scn.name].objects:
+        if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+            bpy.ops.object.select_all(action='DESELECT')
+            scn.objects.active = ob
+            ob.select = True
+            #if ob.get("smoothable") == 1: # vale tanto get, como .propiedad
+            todo = getsettings()
+            if "smoothable" in ob:
+                if ob.get("smoothable") == 1:
+                #if ob.smoothable == 1:
+                    if 'Subsurf' not in ob.modifiers:
+                        bpy.ops.object.modifier_add(type='SUBSURF')
+                        #ob.modifiers['Subsurf'].levels = scn['Levelv']
+                        ob.modifiers['Subsurf'].levels = todo[0]
+                        #ob.modifiers['Subsurf'].render_levels = scn['Levelr']
+                        ob.modifiers['Subsurf'].render_levels = todo[1]
+                        ob.modifiers['Subsurf'].show_only_control_edges = todo[2]
+                        if scn.Typealg:
+                            ob.modifiers['Subsurf'].subdivision_type = 'SIMPLE'
+                myshade(todo[3],ob)
+            bpy.ops.object.select_all(action='DESELECT') 
+
+def updatesmooth():
+    scn = bpy.context.scene
+    for ob in bpy.data.scenes[scn.name].objects:
+        if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+            bpy.ops.object.select_all(action='DESELECT')
+            scn.objects.active = ob
+            ob.select = True
+            #if ob.get("smoothable") == 1: # vale tanto get, como .propiedad
+            todo = getsettings()
+            if "smoothable" in ob:
+                if ob.get("smoothable") == 1:
+                #if ob.smoothable == 1:
+                    if 'Subsurf' in ob.modifiers:
+                        #ob.modifiers['Subsurf'].levels = scn['Levelv']
+                        ob.modifiers['Subsurf'].levels = todo[0]
+                        #ob.modifiers['Subsurf'].render_levels = scn['Levelr']
+                        ob.modifiers['Subsurf'].render_levels = todo[1]
+                        ob.modifiers['Subsurf'].show_only_control_edges = todo[2]
+                        if scn.Typealg:
+                            ob.modifiers['Subsurf'].subdivision_type = 'SIMPLE'
+                myshade(todo[3],ob)
+            bpy.ops.object.select_all(action='DESELECT') 
+
+def importar():
+    todo = getsettings()
+    scn = bpy.context.scene
+    for ob in bpy.data.scenes[scn.name].objects:
+        if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+            bpy.ops.object.select_all(action='DESELECT')
+            scn.objects.active = ob
+            ob.select = True
+            if 'Subsurf' in ob.modifiers:
+                bpy.types.Object.smoothable = bpy.props.IntProperty()
+                ob.smoothable = 1
+                #bpy.context.object["smoothable"] = 1
+                ob.modifiers['Subsurf'].show_only_control_edges = todo[2]
+                if scn.Typealg:
+                            ob.modifiers['Subsurf'].subdivision_type = 'SIMPLE'
+                myshade(todo[3],ob)
+            bpy.ops.object.select_all(action='DESELECT') 
+
+def clearsm():
+    scn = bpy.context.scene
+    for ob in bpy.data.scenes[scn.name].objects:
+        if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+            bpy.ops.object.select_all(action='DESELECT')
+            scn.objects.active = ob
+            ob.select = True
+            todo = getsettings()
+            if "smoothable" in ob:
+                if 'Subsurf' in ob.modifiers:
+                    bpy.ops.object.modifier_remove(modifier="Subsurf")
+                ob.smoothable = 0
+                bpy.ops.object.shade_flat()
+                bpy.ops.wm.properties_remove(data_path="object", property="smoothable")
+            bpy.ops.object.select_all(action='DESELECT') 
+    
+class myclearsm(bpy.types.Operator):
+    bl_idname = "clearsm.clearsm"
+    bl_label = "Remove all smooths/ables"
+    bl_description = "Delete all smoothable system and smooths"
+    def execute(self, context):
+        clearsm()
         return{'FINISHED'}
-            
+
+class importables(bpy.types.Operator):
+    bl_idname = "stosmooth.stosmooth"
+    bl_label = "Smooths to Smoothable"
+    bl_description = "Import all smooths to my smoothable system"
+    def execute(self, context):
+        importar()
+        return{'FINISHED'}
+        
+class smoothables(bpy.types.Operator):
+    bl_idname = "smoothable.smoothable"
+    bl_label = "Smoothable"
+    bl_description = "Add selected objects to my smoothable system manager"
+    def execute(self, context):
+        smoothable()
+        return{'FINISHED'}
+
+class dessmoothables(bpy.types.Operator):
+    bl_idname = "dessmoothable.dessmoothable"
+    bl_label = "DesSmoothable"
+    bl_description = "Remove slected objects from my smoothable system manager, and remove: smooth, wire, shade_smooth"
+    def execute(self, context):
+        dessmoothable()
+        return{'FINISHED'}
+
+class delsmooth(bpy.types.Operator):
+    bl_idname = "delsmooth.delsmooth"
+    bl_label = "DelAllSmooth"
+    bl_description = "Remove all smooth but not out of my system"
+    def execute(self, context):
+        delmismooth()
+        return{'FINISHED'}
+
+class smooth(bpy.types.Operator):
+    bl_idname = "allsmooth.allsmooth"
+    bl_label = "Allmooth"
+    bl_description = "Smooth for all smoothables objects"
+    def execute(self, context):
+        mismooth()
+        return{'FINISHED'}
+
+class upsettings(bpy.types.Operator):
+    bl_idname = "upsetigs.upsetings"
+    bl_label = "Update"
+    bl_description = "Update all settings for all smoothable objects"
+    def execute(self, context):
+        updatesmooth()
+        return{'FINISHED'}
+
 class SelectCam(bpy.types.Operator):
     bl_idname = "selctcam.selctcam"
     bl_label = "projector-(camera)  -  Select"
