@@ -197,31 +197,34 @@ class Botones_UVProjection(bpy.types.Panel):
 
         # smoothable #############################################################:
         col.label("Settings Display:")
+
+        col.prop(scn, 'ODisplay')
+        col.prop(scn, 'Soften')
+        
         subrow0 = col.row(align=True)
         subrow0.operator("smoothable.smoothable", text='Smoothable')
         subrow0.operator("dessmoothable.dessmoothable", text='DeSmoothable')
         
-        col.prop(scn, 'ODisplay')
-        col.prop(scn, 'Soften')
+        subrow1 = col.row(align=True)
+        subrow1.operator("allsmooth.allsmooth", text='All Smooth')
+        subrow1.operator("upsetigs.upsetings", text='Update')
+        
+        col.operator("delsmooth.delsmooth", text='Del Smooths')
+        col.operator("clearsm.clearsm", text='Remove all smoothables')
+        
+        col.prop(scn, 'Levelv', toggle=True)
+        col.prop(scn, 'Levelr', toggle=True)
         col.prop(scn, 'Typealg', toggle=True)
+        
+        col.operator("selsmoothables.selsmoothables", text='Select All Smoothables')
+        col.operator("stosmooth.stosmooth", text='Smooths to Smoothable')
+
         
         # wire:
         subrow2 = col.row(align=True)
         subrow2.operator("setwire.setwire", text='Wire On')
         subrow2.operator("unsetwire.unsetwire", text='Wire Off')
         
-        subrow1 = col.row(align=True)
-        subrow1.operator("allsmooth.allsmooth", text='All Smooth')
-        subrow1.operator("upsetigs.upsetings", text='Update')
-        
-        col.prop(scn, 'Levelv', toggle=True)
-        col.prop(scn, 'Levelr', toggle=True)
-
-        col.operator("delsmooth.delsmooth", text='Del Smooths')
-        
-        col.operator("stosmooth.stosmooth", text='Smooths to Smoothable')
-        col.operator("selsmoothables.selsmoothables", text='Select All Smoothables')
-        col.operator("clearsm.clearsm", text='Remove all smoothables')
         # fin smoothable ##########################################################
         
         col.label("Camera/Locator settings:")
