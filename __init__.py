@@ -523,6 +523,7 @@ class selsmoothables(bpy.types.Operator):
     bl_description = "Select All Objects in smoothable system manager"
     def execute(self, context):
         scn = bpy.context.scene
+        bpy.ops.object.select_all(action='DESELECT')
         for ob in bpy.data.scenes[scn.name].objects:
             if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
                 if 'smoothable' in ob:
