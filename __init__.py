@@ -217,7 +217,7 @@ class Botones_UVProjection(bpy.types.Panel):
         col.prop(scn, 'Levelv', toggle=True)
         col.prop(scn, 'Levelr', toggle=True)
 
-        col.operator("delsmooth.delsmooth", text='DelAllSmooth')
+        col.operator("delsmooth.delsmooth", text='Del Smooths')
         
         col.operator("stosmooth.stosmooth", text='Smooths to Smoothable')
         col.operator("selsmoothables.selsmoothables", text='Select All Smoothables')
@@ -270,7 +270,8 @@ def smoothable():
                 myshade(todo[3],ob)
                 bpy.ops.object.select_all(action='DESELECT') 
     else:
-        for ob in bpy.data.objects:
+        scn = bpy.context.scene
+        for ob in bpy.data.scenes[scn.name].objects:
             if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
                 bpy.ops.object.select_all(action='DESELECT')
                 scn = bpy.context.scene
@@ -296,7 +297,8 @@ def dessmoothable():
                 bpy.ops.wm.properties_remove(data_path="object", property="smoothable")
                 bpy.ops.object.select_all(action='DESELECT') 
     else:
-        for ob in bpy.data.objects:
+        scn = bpy.context.scene
+        for ob in bpy.data.scenes[scn.name].objects:
             if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
                 bpy.ops.object.select_all(action='DESELECT')
                 scn = bpy.context.scene
@@ -307,37 +309,69 @@ def dessmoothable():
                 bpy.ops.wm.properties_remove(data_path="object", property="smoothable")
                 bpy.ops.object.select_all(action='DESELECT')
 def delmismooth():
-    scn = bpy.context.scene
-    for ob in bpy.data.scenes[scn.name].objects:
-        if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
-            bpy.ops.object.select_all(action='DESELECT')
-            scn = bpy.context.scene
-            scn.objects.active = ob
-            ob.select = True
-            #if ob.get("smoothable") == 1: # vale tanto get, como .propiedad
-            todo = getsettings()
-            
-            modificadores = []
-            for mod in ob.modifiers:
-                modificadores.append(mod)
+    if bpy.context.selected_objects:
+        for ob in bpy.context.selected_objects:
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+                bpy.ops.object.select_all(action='DESELECT')
+                scn = bpy.context.scene
+                scn.objects.active = ob
+                ob.select = True
+                #if ob.get("smoothable") == 1: # vale tanto get, como .propiedad
+                todo = getsettings()
                 
-            if "smoothable" in ob and ob.smoothable == 1:
-                indice = 0
-                existe = False
-                while (not existe and indice < len(modificadores)):
-                    if ob.modifiers[indice].type == 'SUBSURF':
-                        existe = True
-                        donde = indice
-                    else:
-                        existe = False
-                    indice += 1
+                modificadores = []
+                for mod in ob.modifiers:
+                    modificadores.append(mod)
                     
-                if existe:
-                    nombre = ob.modifiers[donde].name
-                    bpy.ops.object.modifier_remove(modifier=nombre)
-                    #myshade(todo[3],ob)
-                    bpy.ops.object.shade_flat()
-            bpy.ops.object.select_all(action='DESELECT') 
+                if "smoothable" in ob and ob.smoothable == 1:
+                    indice = 0
+                    existe = False
+                    while (not existe and indice < len(modificadores)):
+                        if ob.modifiers[indice].type == 'SUBSURF':
+                            existe = True
+                            donde = indice
+                        else:
+                            existe = False
+                        indice += 1
+                        
+                    if existe:
+                        nombre = ob.modifiers[donde].name
+                        bpy.ops.object.modifier_remove(modifier=nombre)
+                        #myshade(todo[3],ob)
+                        bpy.ops.object.shade_flat()
+                bpy.ops.object.select_all(action='DESELECT')
+    else:
+        scn = bpy.context.scene
+        for ob in bpy.data.scenes[scn.name].objects:
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+                bpy.ops.object.select_all(action='DESELECT')
+                scn = bpy.context.scene
+                scn.objects.active = ob
+                ob.select = True
+                #if ob.get("smoothable") == 1: # vale tanto get, como .propiedad
+                todo = getsettings()
+                
+                modificadores = []
+                for mod in ob.modifiers:
+                    modificadores.append(mod)
+                    
+                if "smoothable" in ob and ob.smoothable == 1:
+                    indice = 0
+                    existe = False
+                    while (not existe and indice < len(modificadores)):
+                        if ob.modifiers[indice].type == 'SUBSURF':
+                            existe = True
+                            donde = indice
+                        else:
+                            existe = False
+                        indice += 1
+                        
+                    if existe:
+                        nombre = ob.modifiers[donde].name
+                        bpy.ops.object.modifier_remove(modifier=nombre)
+                        #myshade(todo[3],ob)
+                        bpy.ops.object.shade_flat()
+                bpy.ops.object.select_all(action='DESELECT') 
 
 def mismooth():
     scn = bpy.context.scene
@@ -559,8 +593,8 @@ class dessmoothables(bpy.types.Operator):
 
 class delsmooth(bpy.types.Operator):
     bl_idname = "delsmooth.delsmooth"
-    bl_label = "DelAllSmooth"
-    bl_description = "Remove all smooth but not out of my system"
+    bl_label = "Del Smooths"
+    bl_description = "Remove smooth but not out of my system (for selected object or all)"
     def execute(self, context):
         delmismooth()
         return{'FINISHED'}
