@@ -213,13 +213,14 @@ class Botones_UVProjection(bpy.types.Panel):
         subrow1 = col.row(align=True)
         subrow1.operator("allsmooth.allsmooth", text='All Smooth')
         subrow1.operator("upsetigs.upsetings", text='Update')
-
+        
         col.prop(scn, 'Levelv', toggle=True)
         col.prop(scn, 'Levelr', toggle=True)
 
         col.operator("delsmooth.delsmooth", text='DelAllSmooth')
         
         col.operator("stosmooth.stosmooth", text='Smooths to Smoothable')
+        col.operator("selsmoothables.selsmoothables", text='Select All Smoothables')
         col.operator("clearsm.clearsm", text='Remove all smoothables')
         # fin smoothable ##########################################################
         
@@ -490,6 +491,21 @@ class myclearsm(bpy.types.Operator):
         clearsm()
         return{'FINISHED'}
 
+class selsmoothables(bpy.types.Operator):
+    bl_idname = "selsmoothables.selsmoothables"
+    bl_label = "Select All Smoothables"
+    bl_description = "Select All Objects in smoothable system manager"
+    def execute(self, context):
+        scn = bpy.context.scene
+        for ob in bpy.data.scenes[scn.name].objects:
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+                if 'smoothable' in ob:
+                    myobject = bpy.data.objects[str(ob.name)]
+                    myobject.select = True
+                    scn.objects.active = myobject
+        return{'FINISHED'}
+
+        
 class importables(bpy.types.Operator):
     bl_idname = "stosmooth.stosmooth"
     bl_label = "Smooths to Smoothable"
