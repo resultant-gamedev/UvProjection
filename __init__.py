@@ -492,10 +492,13 @@ def updatesmooth():
     
     if bpy.context.selected_objects:
         for ob in bpy.context.selected_objects:
-            if scn.shadelessmode:
-                bpy.context.selected_objects[0].material_slots[0].material.use_shadeless = True
-            else:
-                bpy.context.selected_objects[0].material_slots[0].material.use_shadeless = False
+            try:
+                if scn.shadelessmode:
+                    bpy.context.selected_objects[0].material_slots[0].material.use_shadeless = True
+                else:
+                    bpy.context.selected_objects[0].material_slots[0].material.use_shadeless = False
+            except:
+                pass
     else:
         scn = bpy.context.scene
         for ob in bpy.data.scenes[scn.name].objects:
@@ -503,11 +506,13 @@ def updatesmooth():
                 bpy.ops.object.select_all(action='DESELECT')
                 scn.objects.active = ob
                 ob.select = True
-                if scn.shadelessmode:
-                    ob.material_slots[0].material.use_shadeless = True
-                else:
-                    ob.material_slots[0].material.use_shadeless = False
-        
+                try:
+                    if scn.shadelessmode:
+                        ob.material_slots[0].material.use_shadeless = True
+                    else:
+                        ob.material_slots[0].material.use_shadeless = False
+                except:
+                    pass
     for ob in bpy.data.scenes[scn.name].objects:
         if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
             bpy.ops.object.select_all(action='DESELECT')
