@@ -2,8 +2,13 @@ import bpy
 
 ######## materiales ############
 def MiMaterial():
+    scn = bpy.context.scene
     mat = bpy.data.materials.new("MiMaterial")
-    mat.use_shadeless = True
+    if scn.shadelessmode:
+        mat.use_shadeless = True
+    else:
+        mat.use_shadeless = False
+    #mat.use_shadeless = True
     mat.use_transparency = True
     mat.alpha = 0
     return mat
