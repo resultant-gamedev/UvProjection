@@ -99,6 +99,7 @@ def mySceneProperties():
     bpy.types.Scene.ODisplay = bpy.props.BoolProperty( name = "Optimal Display", description = "Active optimal display", default=True)
     bpy.types.Scene.Soften = bpy.props.BoolProperty( name = "Soften normals", description = "Active smooth shade", default=False)
     bpy.types.Scene.Typealg = bpy.props.BoolProperty( name = "Simple", description = "Subdivision Algorithm Simple",default=True)
+    bpy.types.Scene.shadelessmode = bpy.props.BoolProperty( name = "Shadeless Mode", description = "Active Sadeless", default=True)
     # fin smoothable ######################################################################################
 
 mySceneProperties()
@@ -200,6 +201,7 @@ class Botones_UVProjection(bpy.types.Panel):
 
         col.prop(scn, 'ODisplay')
         col.prop(scn, 'Soften')
+        col.prop(scn, 'shadelessmode')
         
         subrow0 = col.row(align=True)
         subrow0.operator("smoothable.smoothable", text='Smoothable')
@@ -487,6 +489,25 @@ def mismooth():
 def updatesmooth():
     scn = bpy.context.scene
     todo = getsettings()
+    
+    if bpy.context.selected_objects:
+        for ob in bpy.context.selected_objects:
+            if scn.shadelessmode:
+                bpy.context.selected_objects[0].material_slots[0].material.use_shadeless = True
+            else:
+                bpy.context.selected_objects[0].material_slots[0].material.use_shadeless = False
+    else:
+        scn = bpy.context.scene
+        for ob in bpy.data.scenes[scn.name].objects:
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+                bpy.ops.object.select_all(action='DESELECT')
+                scn.objects.active = ob
+                ob.select = True
+                if scn.shadelessmode:
+                    ob.material_slots[0].material.use_shadeless = True
+                else:
+                    ob.material_slots[0].material.use_shadeless = False
+        
     for ob in bpy.data.scenes[scn.name].objects:
         if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
             bpy.ops.object.select_all(action='DESELECT')
@@ -521,7 +542,7 @@ def updatesmooth():
                     nombre = ob.modifiers[donde].name
                     for i in range(len(modificadores)):
                         bpy.ops.object.modifier_move_up(modifier=nombre)
-                        
+            
             bpy.ops.object.select_all(action='DESELECT') 
 
 def importar():
@@ -929,8 +950,8 @@ class AccionToselected(bpy.types.Operator):
         ob = bpy.context.selected_objects
         # acciones:
         p.proyectorcillo(ob)
-
-        if ob:
+                
+        if ob:        
             img = imagen()
             v.vision()
             # si son muchos por eso me lo recorro:
@@ -950,8 +971,7 @@ class AccionToselected(bpy.types.Operator):
                     tc.uvgenerated(sobject) # este setea en las coordenadas de textura que use uv
                     # actualizamos las relaciones:
                     up.update(ob)
-
-        
+                    
         return{'FINISHED'}
         
 class Accion_ToALL(bpy.types.Operator):
