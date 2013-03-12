@@ -99,7 +99,7 @@ def mySceneProperties():
     bpy.types.Scene.ODisplay = bpy.props.BoolProperty( name = "Optimal Display", description = "Active optimal display", default=True)
     bpy.types.Scene.Soften = bpy.props.BoolProperty( name = "Soften normals", description = "Active smooth shade", default=False)
     bpy.types.Scene.Typealg = bpy.props.BoolProperty( name = "Simple", description = "Subdivision Algorithm Simple",default=True)
-    bpy.types.Scene.shadelessmode = bpy.props.BoolProperty( name = "Shadeless Mode", description = "Active Sadeless", default=True)
+    bpy.types.Scene.shadelessmode = bpy.props.BoolProperty( name = "Shadeless Mode", description = "Active Sadeless (for selected objects or all)", default=True)
     # fin smoothable ######################################################################################
 
 mySceneProperties()
