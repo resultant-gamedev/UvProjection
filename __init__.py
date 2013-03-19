@@ -100,6 +100,7 @@ def mySceneProperties():
     bpy.types.Scene.Soften = bpy.props.BoolProperty( name = "Soften normals", description = "Active smooth shade", default=False)
     bpy.types.Scene.Typealg = bpy.props.BoolProperty( name = "Simple", description = "Subdivision Algorithm Simple",default=True)
     bpy.types.Scene.shadelessmode = bpy.props.BoolProperty( name = "Shadeless Mode", description = "Active Shadeless (for selected objects or all)", default=True)
+    bpy.types.Scene.MatSpecular = bpy.props.FloatProperty( name = "Specular", description = "Specular value (for selected objects or all)", default = 0)
     # fin smoothable ######################################################################################
 
 mySceneProperties()
@@ -211,6 +212,7 @@ class Botones_UVProjection(bpy.types.Panel):
         subrow1.operator("allsmooth.allsmooth", text='Smooth')
         subrow1.operator("delsmooth.delsmooth", text='Del Smooths')
         col.operator("upsetigs.upsetings", text='Update')
+        col.prop(scn, 'MatSpecular')
         col.prop(scn, 'Levelv', toggle=True)
         col.prop(scn, 'Levelr', toggle=True)
         col.prop(scn, 'Typealg', toggle=True)
@@ -493,6 +495,10 @@ def updatesmooth():
     if bpy.context.selected_objects:
         for ob in bpy.context.selected_objects:
             try:
+                bpy.context.selected_objects[0].material_slots[0].material.specular_intensity = scn.MatSpecular
+            except:
+                pass
+            try:
                 if scn.shadelessmode:
                     bpy.context.selected_objects[0].material_slots[0].material.use_shadeless = True
                 else:
@@ -506,6 +512,10 @@ def updatesmooth():
                 bpy.ops.object.select_all(action='DESELECT')
                 scn.objects.active = ob
                 ob.select = True
+                try:
+                    ob.material_slots[0].material.specular_intensity = scn.MatSpecular
+                except:
+                    pass
                 try:
                     if scn.shadelessmode:
                         ob.material_slots[0].material.use_shadeless = True
