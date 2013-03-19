@@ -508,29 +508,6 @@ def updatesmooth():
                     bpy.context.selected_objects[0].material_slots[0].material.use_shadeless = False
             except:
                 pass
-    else:
-        scn = bpy.context.scene
-        for ob in bpy.data.scenes[scn.name].objects:
-            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
-                bpy.ops.object.select_all(action='DESELECT')
-                scn.objects.active = ob
-                ob.select = True
-                try:
-                    ob.material_slots[0].material.specular_intensity = scn.MatSpecular
-                except:
-                    pass
-                try:
-                    if scn.shadelessmode:
-                        ob.material_slots[0].material.use_shadeless = True
-                    else:
-                        ob.material_slots[0].material.use_shadeless = False
-                except:
-                    pass
-    for ob in bpy.data.scenes[scn.name].objects:
-        if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
-            bpy.ops.object.select_all(action='DESELECT')
-            scn.objects.active = ob
-            ob.select = True
             
             modificadores = []
             for mod in ob.modifiers:
@@ -560,6 +537,54 @@ def updatesmooth():
                     nombre = ob.modifiers[donde].name
                     for i in range(len(modificadores)):
                         bpy.ops.object.modifier_move_up(modifier=nombre)
+            
+    else:
+        scn = bpy.context.scene
+        for ob in bpy.data.scenes[scn.name].objects:
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+                bpy.ops.object.select_all(action='DESELECT')
+                scn.objects.active = ob
+                ob.select = True
+                try:
+                    ob.material_slots[0].material.specular_intensity = scn.MatSpecular
+                except:
+                    pass
+                try:
+                    if scn.shadelessmode:
+                        ob.material_slots[0].material.use_shadeless = True
+                    else:
+                        ob.material_slots[0].material.use_shadeless = False
+                except:
+                    pass
+            
+                modificadores = []
+                for mod in ob.modifiers:
+                    modificadores.append(mod)
+                    
+                if "smoothable" in ob: # and ob.smoothable == 1:
+                    indice = 0
+                    existe = False
+                    while (not existe and indice < len(modificadores)):
+                        if ob.modifiers[indice].type == 'SUBSURF':
+                            existe = True
+                            donde = indice
+                        else:
+                            existe = False
+                        indice += 1
+                
+                    if existe:
+                        myshade(todo[3],ob)
+                        ob.modifiers[donde].levels = todo[0]
+                        ob.modifiers[donde].render_levels = todo[1]
+                        ob.modifiers[donde].show_only_control_edges = todo[2]
+                        if scn.Typealg:
+                            ob.modifiers[donde].subdivision_type = 'SIMPLE'
+                        else:
+                            ob.modifiers[donde].subdivision_type = 'CATMULL_CLARK'
+                            
+                        nombre = ob.modifiers[donde].name
+                        for i in range(len(modificadores)):
+                            bpy.ops.object.modifier_move_up(modifier=nombre)
             
             bpy.ops.object.select_all(action='DESELECT') 
 
@@ -705,7 +730,7 @@ class smooth(bpy.types.Operator):
 class upsettings(bpy.types.Operator):
     bl_idname = "upsetigs.upsetings"
     bl_label = "Update"
-    bl_description = "Update all settings for all subsurfs objects"
+    bl_description = "Update all settings for all subsurfs objects (in selected objects or all)"
     def execute(self, context):
         updatesmooth()
         return{'FINISHED'}
