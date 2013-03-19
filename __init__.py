@@ -233,9 +233,12 @@ class Botones_UVProjection(bpy.types.Panel):
         col.label("Camera/Locator settings:")
         
         col.operator("updaterot.updaterot", text='Locator  -  Update Orientations')
+        col.operator("updaterotcam.updaterotcam", text='Projector  -  Update Orientations')
+        
         
         col.operator("influencek.influencek", text='locator  -  Connect')
         col.operator("noinfluencek.noinfluencek", text='locator  -  Disconnect')
+        
         #subrow = col.row(align=True)
         #subrow.operator("influence.influence", text='With influence')
         #subrow.operator("noinfluence.noinfluence", text='Without influence')
@@ -819,6 +822,35 @@ class UpdateRott(bpy.types.Operator):
                 myplocator.constraints["TrackTo"].target = None
                 myplocator.constraints.remove(cons)            
 
+        return{'FINISHED'}
+        
+        
+class UpdateRottCam(bpy.types.Operator):
+    bl_idname = "updaterotcam.updaterotcam"
+    bl_label = "Locator  -  Update Orientations"
+    bl_description = "Update orientation locator"
+
+    def execute(self, context):
+        if "Proyector" in bpy.data.objects:
+            if 'TrackTo' not in bpy.data.objects['Proyector'].constraints and bpy.data.objects['Proyector'].constraints['ChildOf'].influence == 0:
+                bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+                myproyector = bpy.data.objects["Proyector"]
+                myproyector.select = True
+                bpy.context.scene.objects.active = myproyector # lo hago objeto activo
+            
+                bpy.data.objects['Proyector'].constraints.new('TRACK_TO')
+                bpy.data.objects['Proyector'].constraints["TrackTo"].target = bpy.data.objects["Locator"]
+                bpy.data.objects['Proyector'].constraints["TrackTo"].track_axis = 'TRACK_NEGATIVE_Z'
+                bpy.data.objects['Proyector'].constraints["TrackTo"].up_axis = 'UP_Y'
+    
+                bpy.ops.nla.bake(frame_start=1, frame_end=1, step=1, only_selected=True, clear_constraints=True, bake_types={'OBJECT'})
+                bpy.ops.anim.keyframe_clear_v3d()
+                
+                bpy.data.objects['Proyector'].constraints.new('CHILD_OF')
+                bpy.data.objects['Proyector'].constraints['ChildOf'].influence = 0
+                bpy.context.object.constraints["ChildOf"].target = bpy.data.objects["Locator"]
+                
+             
         return{'FINISHED'}
     
 class Influence(bpy.types.Operator):
