@@ -533,7 +533,7 @@ def updatesmooth():
             for mod in ob.modifiers:
                 modificadores.append(mod)
                 
-            if "smoothable" in ob and ob.smoothable == 1:
+            if "smoothable" in ob: # and ob.smoothable == 1:
                 indice = 0
                 existe = False
                 while (not existe and indice < len(modificadores)):
