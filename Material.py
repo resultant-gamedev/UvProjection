@@ -4,6 +4,7 @@ import bpy
 def MiMaterial():
     scn = bpy.context.scene
     mat = bpy.data.materials.new("MiMaterial")
+    mat.specular_intensity = scn.MatSpecular
     if scn.shadelessmode:
         mat.use_shadeless = True
     else:
@@ -11,6 +12,7 @@ def MiMaterial():
     #mat.use_shadeless = True
     mat.use_transparency = True
     mat.alpha = 0
+    
     return mat
 
 class Material(object):
