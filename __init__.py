@@ -795,7 +795,7 @@ class WireOff(bpy.types.Operator):
 class UpdateRott(bpy.types.Operator):
     bl_idname = "updaterot.updaterot"
     bl_label = "Locator  -  Update Orientations"
-    bl_description = "Update orientation locator"
+    bl_description = "Update orientation Locator respect Projector"
 
     def execute(self, context):
         if "Locator" in bpy.data.objects:
@@ -828,7 +828,7 @@ class UpdateRott(bpy.types.Operator):
 class UpdateRottCam(bpy.types.Operator):
     bl_idname = "updaterotcam.updaterotcam"
     bl_label = "Locator  -  Update Orientations"
-    bl_description = "Update orientation locator"
+    bl_description = "Update orientation Projector respect Locator"
 
     def execute(self, context):
         if "Proyector" in bpy.data.objects:
