@@ -205,22 +205,22 @@ class Botones_UVProjection(bpy.types.Panel):
         col.prop(scn, 'shadelessmode')
         
         subrow0 = col.row(align=True)
-        subrow0.operator("smoothable.smoothable", text='Smoothable')
-        subrow0.operator("dessmoothable.dessmoothable", text='DeSmoothable')
+        subrow0.operator("smoothable.smoothable", text='Manageable')
+        subrow0.operator("dessmoothable.dessmoothable", text='Unmanageable')
         
         subrow1 = col.row(align=True)
-        subrow1.operator("allsmooth.allsmooth", text='Smooth')
-        subrow1.operator("delsmooth.delsmooth", text='Del Smooths')
+        subrow1.operator("allsmooth.allsmooth", text='Subsurf')
+        subrow1.operator("delsmooth.delsmooth", text='Del Subsurfs')
         col.operator("upsetigs.upsetings", text='Update')
         col.prop(scn, 'MatSpecular')
         col.prop(scn, 'Levelv', toggle=True)
         col.prop(scn, 'Levelr', toggle=True)
         col.prop(scn, 'Typealg', toggle=True)
         
-        col.operator("clearsm.clearsm", text='Remove all smoothables')
+        col.operator("clearsm.clearsm", text='Remove all subsurfs')
         
-        col.operator("selsmoothables.selsmoothables", text='Select All Smoothables')
-        col.operator("stosmooth.stosmooth", text='Smooths to Smoothable')
+        col.operator("selsmoothables.selsmoothables", text='Select All Manageables')
+        col.operator("stosmooth.stosmooth", text='Subsurfs to Manageable')
 
         
         # wire:
@@ -641,15 +641,15 @@ def clearsm():
 class myclearsm(bpy.types.Operator):
     bl_idname = "clearsm.clearsm"
     bl_label = "Remove all smooths/ables"
-    bl_description = "Delete all smoothable system and smooths"
+    bl_description = "Delete all manageable system and subsurfs"
     def execute(self, context):
         clearsm()
         return{'FINISHED'}
 
 class selsmoothables(bpy.types.Operator):
     bl_idname = "selsmoothables.selsmoothables"
-    bl_label = "Select All Smoothables"
-    bl_description = "Select All Objects in smoothable system manager"
+    bl_label = "Select All Manageable"
+    bl_description = "Select All Objects in manageable system manager"
     def execute(self, context):
         scn = bpy.context.scene
         bpy.ops.object.select_all(action='DESELECT')
@@ -665,7 +665,7 @@ class selsmoothables(bpy.types.Operator):
 class importables(bpy.types.Operator):
     bl_idname = "stosmooth.stosmooth"
     bl_label = "Smooths to Smoothable"
-    bl_description = "Import all smooths to my smoothable system"
+    bl_description = "Import all subsurfs to my manageable system"
     def execute(self, context):
         importar()
         return{'FINISHED'}
@@ -673,7 +673,7 @@ class importables(bpy.types.Operator):
 class smoothables(bpy.types.Operator):
     bl_idname = "smoothable.smoothable"
     bl_label = "Smoothable"
-    bl_description = "Add objects to my smoothable system manager (to selected objects or all)"
+    bl_description = "Add objects to my manageable system manager (to selected objects or all)"
     def execute(self, context):
         smoothable()
         return{'FINISHED'}
@@ -681,7 +681,7 @@ class smoothables(bpy.types.Operator):
 class dessmoothables(bpy.types.Operator):
     bl_idname = "dessmoothable.dessmoothable"
     bl_label = "DesSmoothable"
-    bl_description = "Only Remove objects from my smoothable system manager, not smooths (to selected objects or all)"
+    bl_description = "Only Remove objects from my manageable system manager, not subsurfs (to selected objects or all)"
     def execute(self, context):
         dessmoothable()
         return{'FINISHED'}
@@ -689,7 +689,7 @@ class dessmoothables(bpy.types.Operator):
 class delsmooth(bpy.types.Operator):
     bl_idname = "delsmooth.delsmooth"
     bl_label = "Del Smooths"
-    bl_description = "Remove smooth but not out of my system (for selected object or all)"
+    bl_description = "Remove subsurfs but not out of my manageable system (for selected object or all)"
     def execute(self, context):
         delmismooth()
         return{'FINISHED'}
@@ -697,7 +697,7 @@ class delsmooth(bpy.types.Operator):
 class smooth(bpy.types.Operator):
     bl_idname = "allsmooth.allsmooth"
     bl_label = "Smooth"
-    bl_description = "Smooth to smoothables objects (for selected objects or all)"
+    bl_description = "add Subsurf to manageables objects (for selected objects or all)"
     def execute(self, context):
         mismooth()
         return{'FINISHED'}
@@ -705,7 +705,7 @@ class smooth(bpy.types.Operator):
 class upsettings(bpy.types.Operator):
     bl_idname = "upsetigs.upsetings"
     bl_label = "Update"
-    bl_description = "Update all settings for all smoothable objects"
+    bl_description = "Update all settings for all subsurfs objects"
     def execute(self, context):
         updatesmooth()
         return{'FINISHED'}
