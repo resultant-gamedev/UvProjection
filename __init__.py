@@ -853,7 +853,7 @@ class UpdateRott(bpy.types.Operator):
 class UpdateRottCam(bpy.types.Operator):
     bl_idname = "updaterotcam.updaterotcam"
     bl_label = "Locator  -  Update Orientations"
-    bl_description = "Update orientation Projector respect Locator (used with care!!)"
+    bl_description = "Update orientation Projector respect Locator (use with care!!)"
 
     def execute(self, context):
         if "Proyector" in bpy.data.objects:
