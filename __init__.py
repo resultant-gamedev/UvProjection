@@ -169,7 +169,6 @@ class Botones_UVProjection(bpy.types.Panel):
         col.operator("selctcam.selctcam", text='Select projector-(camera) ')
 
         # smoothable #############################################################:
-        col.label("")
         col.label("Settings Display:")
 
         col.operator("upsetigs.upsetings", text='Update')
@@ -848,7 +847,7 @@ class UpdateRottCam(bpy.types.Operator):
                 
                 bpy.data.objects['Proyector'].constraints.new('CHILD_OF')
                 bpy.data.objects['Proyector'].constraints['ChildOf'].influence = 0
-                bpy.context.object.constraints["ChildOf"].target = bpy.data.objects["Locator"]
+                bpy.context.object.constraints['Child Of'].target = bpy.data.objects["Locator"]
                 
              
         return{'FINISHED'}
@@ -864,7 +863,7 @@ class Influence(bpy.types.Operator):
         camara.select = True # la selecciono
         bpy.context.scene.objects.active = camara
         try:
-            bpy.context.object.constraints["ChildOf"].influence = 1
+            bpy.context.object.constraints['Child Of'].influence = 1
             bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
         except:
             pass
@@ -881,7 +880,7 @@ class NoInfluence(bpy.types.Operator):
         camara.select = True # la selecciono
         bpy.context.scene.objects.active = camara
         try:
-            bpy.context.object.constraints["ChildOf"].influence = 0
+            bpy.context.object.constraints['Child Of'].influence = 0
             bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
         except:
             pass
@@ -895,19 +894,31 @@ class InfluenceK(bpy.types.Operator):
     def execute(self, context):
         if "Locator" in bpy.data.objects:        
             bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-            camara = bpy.data.objects["Proyector"]
+            camara = bpy.data.objects['Proyector']
             camara.select = True # la selecciono
             bpy.context.scene.objects.active = camara
-            locator = bpy.data.objects["Locator"]
             try:
                 coordenada = bpy.data.objects['Proyector'].matrix_world.translation
                 coordenadas = [coordenada.x,coordenada.y,coordenada.z]
-                bpy.context.object.constraints["ChildOf"].influence = 1
+                bpy.context.object.constraints['Child Of'].influence = 1
                 bpy.data.objects['Proyector'].matrix_world.translation = coordenadas
-                bpy.ops.constraint.childof_set_inverse(constraint="ChildOf", owner='OBJECT')
-                influencia = bpy.context.object.constraints["ChildOf"].influence #<- truco para q refreske
-                bpy.context.object.constraints["ChildOf"].influence = influencia+1 #<- truco para q refreske
-                bpy.context.object.constraints["ChildOf"].influence = influencia #<- truco para q refreske
+                
+
+                #original_type = bpy.context.area.type
+                #bpy.context.area.type = "PROPERTIES"
+                #bpy.context.space_data.context = 'CONSTRAINT'
+                
+                # clear inverse
+                #bpy.context.object.constraints['Child Of'].inverse_matrix = Matrix() # 4x4 Unit/identity matrix
+                # set inverse
+                bpy.context.object.constraints['Child Of'].inverse_matrix = bpy.context.object.constraints['Child Of'].target.matrix_world.inverted() # is matrix_world really correct?
+                #bpy.ops.constraint.childof_set_inverse(constraint="Child Of", owner='OBJECT') # <-- no se por que este no va.
+                
+                #bpy.context.area.type = original_type
+                
+                #influencia = bpy.context.object.constraints['Child Of'].influence #<- truco para q refreske
+                #bpy.context.object.constraints['Child Of'].influence = influencia+1 #<- truco para q refreske
+                #bpy.context.object.constraints['Child Of'].influence = influencia #<- truco para q refreske
                 
                 bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
                 locator = bpy.data.objects["Locator"]
@@ -932,7 +943,7 @@ class NoInfluencek(bpy.types.Operator):
             try:
                 coordenada = bpy.data.objects['Proyector'].matrix_world.translation
                 coordenadas = [coordenada.x,coordenada.y,coordenada.z]
-                bpy.context.object.constraints["ChildOf"].influence = 0
+                bpy.context.object.constraints['Child Of'].influence = 0
                 bpy.data.objects['Proyector'].matrix_world.translation = coordenadas
                 #bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
                 locator.select = True # la selecciono
@@ -957,10 +968,10 @@ class Inverse(bpy.types.Operator):
         camara.select = True # la selecciono
         bpy.context.scene.objects.active = camara
         try:
-            bpy.ops.constraint.childof_set_inverse(constraint="ChildOf", owner='OBJECT')
-            influencia = bpy.context.object.constraints["ChildOf"].influence #<- truco para q refreske
-            bpy.context.object.constraints["ChildOf"].influence = influencia+1 #<- truco para q refreske
-            bpy.context.object.constraints["ChildOf"].influence = influencia #<- truco para q refreske
+            bpy.ops.constraint.childof_set_inverse(constraint='Child Of', owner='OBJECT')
+            influencia = bpy.context.object.constraints['Child Of'].influence #<- truco para q refreske
+            bpy.context.object.constraints['Child Of'].influence = influencia+1 #<- truco para q refreske
+            bpy.context.object.constraints['Child Of'].influence = influencia #<- truco para q refreske
             #bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
         except:
             pass
@@ -977,10 +988,10 @@ class ClearInverse(bpy.types.Operator):
         camara.select = True # la selecciono
         bpy.context.scene.objects.active = camara
         try:
-            bpy.ops.constraint.childof_clear_inverse(constraint="ChildOf", owner='OBJECT')
-            influencia = bpy.context.object.constraints["ChildOf"].influence #<- truco para q refreske
-            bpy.context.object.constraints["ChildOf"].influence = influencia+1 #<- truco para q refreske
-            bpy.context.object.constraints["ChildOf"].influence = influencia #<- truco para q refreske
+            bpy.ops.constraint.childof_clear_inverse(constraint='Child Of', owner='OBJECT')
+            influencia = bpy.context.object.constraints['Child Of'].influence #<- truco para q refreske
+            bpy.context.object.constraints['Child Of'].influence = influencia+1 #<- truco para q refreske
+            bpy.context.object.constraints['Child Of'].influence = influencia #<- truco para q refreske
             #bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
         except:
             pass
