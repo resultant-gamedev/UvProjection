@@ -19,74 +19,44 @@ bl_info = {
     "name": "Automatic UVProjection",
     "description": "Quickly and easy create projects of Camera Mapping",
     "author": "Jorge Hernandez - Melenedez",
-    "version": (1, 8),
-    "blender": (2, 66, 0),
+    "version": (1, 9),
+    "blender": (2, 71, 0),
     "location": "",
     "warning": "",
     "wiki_url": "",
     "tracker_url": "",
     "category": ""}
 
+if "bpy" in locals():
+    import imp
+    imp.reload(vistas)
+    imp.reload(unwrap)
+    imp.reload(uvmod)
+    imp.reload(material)
+    imp.reload(proyector)
+    imp.reload(tipocoordenadas)
+    imp.reload(update)
+else:
+    from . import vistas
+    from . import unwrap
+    from . import uvmod
+    from . import material
+    from . import proyector
+    from . import tipocoordenadas
+    from . import update
+
 import bpy
-import os, sys
+from bpy.props import *
 
-# rutas ##############################################
-NAB = "rojection" #<- Nombre Addon a Buscar
 
-if sys.platform.startswith("linux") or sys.platform.startswith("darwin"):
-    barra = "/"
-elif sys.platform.startswith("win") or sys.platform.startswith("dos") or sys.platform.startswith("ms"):
-    barra = "\\"
+u = unwrap.Unwrap()
+v = vistas.Vistas()
+um = uvmod.Uvmod()
+m = material.Material()
+p = proyector.Proyector()
+tc = tipocoordenadas.Tipocoordenadas()
+up = update.Update()
     
-# rutas conocidas:
-rutas_scripts = bpy.utils.script_paths()
-rutas_addons = []
-for i in range(len(rutas_scripts)):
-    rutas_addons.append(str(rutas_scripts[i])+"/addons")
-
-# creando array de addons disponibles:
-all_addons = [] # contendra un array con 0 y 1 con los addons del usuario y los de el path de blender.
-for i in range(len(rutas_addons)):
-    all_addons.append(os.listdir(rutas_addons[i]))
-
-# buscando en que ruta esta el addon:
-for i in range(len(all_addons)):
-    for a in all_addons[i]:
-        if a.find(NAB) >= 0:
-            ruta_encontrado = str(rutas_addons[i])
-            print(ruta_encontrado)
-
-# todos los addons del directorio en el que se encuentra mi addon:
-addons_hermanos = os.listdir(ruta_encontrado)
-for a in addons_hermanos:
-    if a.find(NAB) >= 0:
-        FOLDER_NAME=str(a)
-
-#FOLDER_NAME="uvprojection"
-
-for i in range(len(rutas_addons)):
-    if os.path.exists(rutas_addons[i]+barra+FOLDER_NAME):
-        RUTA = rutas_addons[i]+barra+FOLDER_NAME
-
-sys.path.append(RUTA)
-# fin rutas ##########################################
-
-from Vistas import *
-from Unwrap import *
-from Uvmod import *
-from Material import *
-from Proyector import *
-from Tipocoordenadas import *
-from Update import *
-
-u = Unwrap()
-v = Vistas()
-um = Uvmod()
-m = Material()
-p = Proyector()
-tc = Tipocoordenadas()
-up = Update()
-
 def mySceneProperties():
     # para el listado de objetos esto es necesario:
     # son como propiedades para el item de interfaz:
@@ -116,6 +86,7 @@ class Botones_UVProjection(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     #bl_region_type = "TOOL_PROPS"
     bl_region_type = "TOOLS"
+    bl_category = "UVP"
 
     def draw(self, context):
         layout = self.layout
@@ -173,7 +144,7 @@ class Botones_UVProjection(bpy.types.Panel):
         #col.operator("unwrapeado.unwrapeado", text='(Only) Auto UnWrap for all')
         col.operator("uprel.uprel", text='Material //-// Render  -  Update')
 
-        col.label("Objects:")
+        col.label("Handlers:")
         
         # para el modo de coordenadas ########################################:
         #col.label("Handlers Orientations:")
@@ -189,29 +160,33 @@ class Botones_UVProjection(bpy.types.Panel):
             col.operator("transform.delete_orientation", text="", icon="X")
         # fin modo coordenadas ################################################
         
-        # select camera:
-        col.operator("selctcam.selctcam", text='projector-(camera)  -  Select')
         
         # lock unlock:
         subrow3 = col.row(align=True)
         subrow3.operator("lock.lock", text='Lock')
         subrow3.operator("unlock.unlock", text='Unlock')
+        # select camera:
+        col.operator("selctcam.selctcam", text='Select projector-(camera) ')
 
         # smoothable #############################################################:
+        col.label("")
         col.label("Settings Display:")
+
+        col.operator("upsetigs.upsetings", text='Update')
 
         col.prop(scn, 'ODisplay')
         col.prop(scn, 'Soften')
         col.prop(scn, 'shadelessmode')
         
         subrow0 = col.row(align=True)
+        col.label("Smooth Settings:")
         subrow0.operator("smoothable.smoothable", text='Manageable')
         subrow0.operator("dessmoothable.dessmoothable", text='Unmanageable')
         
         subrow1 = col.row(align=True)
         subrow1.operator("allsmooth.allsmooth", text='Subsurf')
         subrow1.operator("delsmooth.delsmooth", text='Del Subsurfs')
-        col.operator("upsetigs.upsetings", text='Update')
+
         col.prop(scn, 'MatSpecular')
         col.prop(scn, 'Levelv', toggle=True)
         col.prop(scn, 'Levelr', toggle=True)
