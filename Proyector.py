@@ -36,7 +36,7 @@ class Proyector(object):
             myproyector.select = True # lo selecciono
             bpy.context.scene.objects.active = ob # lo hago objeto activo
             bpy.ops.object.constraint_add(type='CHILD_OF')
-            bpy.context.object.constraints["ChildOf"].target = bpy.data.objects["Locator"]
+            bpy.context.object.constraints['Child Of'].target = bpy.data.objects["Locator"]
                        
             # emparentado:
             #myobject = bpy.data.objects[str(ob.name)]
