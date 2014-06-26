@@ -160,7 +160,7 @@ class Botones_UVProjection(bpy.types.Panel):
             col.operator("transform.delete_orientation", text="", icon="X")
         # fin modo coordenadas ################################################
         
-        
+        col.label("Objects:")
         # lock unlock:
         subrow3 = col.row(align=True)
         subrow3.operator("lock.lock", text='Lock')
