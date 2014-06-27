@@ -67,7 +67,7 @@ def mySceneProperties():
     bpy.types.Scene.Levelv = bpy.props.IntProperty( name = "Level View", default = 1, min = 0, max = 6)
     bpy.types.Scene.Levelr = bpy.props.IntProperty( name = "Level Render", default = 1, min = 0, max = 6)
     bpy.types.Scene.ODisplay = bpy.props.BoolProperty( name = "Optimal Display", description = "Active optimal display", default=True)
-    bpy.types.Scene.Soften = bpy.props.BoolProperty( name = "Soften normals", description = "Active smooth shade", default=False)
+    bpy.types.Scene.Soften = bpy.props.BoolProperty( name = "Soften normals", description = "Active smooth shade (per selection objects manageables)", default=False)
     bpy.types.Scene.Typealg = bpy.props.BoolProperty( name = "Simple", description = "Subdivision Algorithm Simple",default=True)
     bpy.types.Scene.shadelessmode = bpy.props.BoolProperty( name = "Shadeless Mode", description = "Active Shadeless (for selected objects or all)", default=True)
     bpy.types.Scene.MatSpecular = bpy.props.FloatProperty( name = "Specular", description = "Specular value (for selected objects or all)", default = 0)
@@ -169,33 +169,32 @@ class Botones_UVProjection(bpy.types.Panel):
         col.operator("selctcam.selctcam", text='Select projector-(camera) ')
 
         # smoothable #############################################################:
-        col.label("Settings Display:")
-
-        col.operator("upsetigs.upsetings", text='Update')
-
-        col.prop(scn, 'ODisplay')
-        col.prop(scn, 'Soften')
-        col.prop(scn, 'shadelessmode')
-        
-        subrow0 = col.row(align=True)
         col.label("Smooth Settings:")
+        subrow0 = col.row(align=True)
         subrow0.operator("smoothable.smoothable", text='Manageable')
         subrow0.operator("dessmoothable.dessmoothable", text='Unmanageable')
-        
+        col.operator("upsetigs.upsetings", text='Update')
+
         subrow1 = col.row(align=True)
         subrow1.operator("allsmooth.allsmooth", text='Subsurf')
         subrow1.operator("delsmooth.delsmooth", text='Del Subsurfs')
-
-        col.prop(scn, 'MatSpecular')
+        
         col.prop(scn, 'Levelv', toggle=True)
         col.prop(scn, 'Levelr', toggle=True)
         col.prop(scn, 'Typealg', toggle=True)
         
-        col.operator("clearsm.clearsm", text='Remove all subsurfs')
-        
+        col.operator("clearsm.clearsm", text='Remove all subsurfs')        
         col.operator("selsmoothables.selsmoothables", text='Select All Manageables')
         col.operator("stosmooth.stosmooth", text='Subsurfs to Manageable')
 
+        col.label("Settings Display:")
+        col.prop(scn, 'ODisplay')
+        col.prop(scn, 'Soften')
+        col.prop(scn, 'shadelessmode')
+
+        col.prop(scn, 'MatSpecular')
+        
+        
         
         # wire:
         subrow2 = col.row(align=True)
