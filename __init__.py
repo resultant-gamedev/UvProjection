@@ -184,8 +184,8 @@ class Botones_UVProjection(bpy.types.Panel):
         subrow4.prop(scn, 'Levelr', toggle=True)
         col.prop(scn, 'Typealg', toggle=True)
         
-        col.operator("clearsm.clearsm", text='Remove all subsurfs')        
         col.operator("selsmoothables.selsmoothables", text='Select All Manageables')
+        col.operator("clearsm.clearsm", text='Remove all subsurfs')        
         col.operator("stosmooth.stosmooth", text='Subsurfs to Manageable')
 
         col.label("Settings Display:")
