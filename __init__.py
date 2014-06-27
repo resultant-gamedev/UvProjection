@@ -182,14 +182,15 @@ class Botones_UVProjection(bpy.types.Panel):
         subrow4 = col.row(align=True)
         subrow4.prop(scn, 'Levelv', toggle=True)
         subrow4.prop(scn, 'Levelr', toggle=True)
-        col.prop(scn, 'Typealg', toggle=True)
+        subrow5 = col.row(align=True)
+        subrow5.prop(scn, 'Typealg', toggle=True)
+        subrow5.prop(scn, 'ODisplay')
         
-        col.operator("selsmoothables.selsmoothables", text='Select All Manageables')
-        col.operator("clearsm.clearsm", text='Remove all subsurfs')        
         col.operator("stosmooth.stosmooth", text='Subsurfs to Manageable')
-
+        col.operator("selsmoothables.selsmoothables", text='Select All Manageables')
+        col.operator("clearsm.clearsm", text='Remove all mngbl & subsrf')        
+        
         col.label("Settings Display:")
-        col.prop(scn, 'ODisplay')
         col.prop(scn, 'Soften')
         col.prop(scn, 'shadelessmode')
 
@@ -197,9 +198,9 @@ class Botones_UVProjection(bpy.types.Panel):
         
         
         # wire:
-        subrow5 = col.row(align=True)
-        subrow5.operator("setwire.setwire", text='Wire On')
-        subrow5.operator("unsetwire.unsetwire", text='Wire Off')
+        subrow6 = col.row(align=True)
+        subrow6.operator("setwire.setwire", text='Wire On')
+        subrow6.operator("unsetwire.unsetwire", text='Wire Off')
         
         # fin smoothable ##########################################################
         
