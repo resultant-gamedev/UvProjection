@@ -798,27 +798,27 @@ class UpdateRott(bpy.types.Operator):
 
     def execute(self, context):
         if "Locator" in bpy.data.objects:
-            if bpy.data.objects['Proyector'].constraints['ChildOf'].influence == 0:
+            if bpy.data.objects['Proyector'].constraints['Child Of'].influence == 0:
                 bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
                 myplocator = bpy.data.objects["Locator"]
                 myplocator.select = True
                 bpy.context.scene.objects.active = myplocator # lo hago objeto activo
 
                 myplocator.constraints.new('TRACK_TO')
-                myplocator.constraints["TrackTo"].target = bpy.data.objects["Proyector"]
-                myplocator.constraints["TrackTo"].up_axis = 'UP_Y'
-                myplocator.constraints["TrackTo"].track_axis = 'TRACK_Z'
+                myplocator.constraints["Track To"].target = bpy.data.objects["Proyector"]
+                myplocator.constraints["Track To"].up_axis = 'UP_Y'
+                myplocator.constraints["Track To"].track_axis = 'TRACK_Z'
                 
                 bpy.ops.nla.bake(frame_start=1, frame_end=1, step=1, only_selected=True, clear_constraints=True, bake_types={'OBJECT'})
                 bpy.ops.anim.keyframe_clear_v3d()
                 
                 # chapuza para q luego el conector vuelva a funcionar juassss
                 myplocator.constraints.new('TRACK_TO')
-                myplocator.constraints["TrackTo"].target = bpy.data.objects["Proyector"]
-                myplocator.constraints["TrackTo"].up_axis = 'UP_Y'
-                myplocator.constraints["TrackTo"].track_axis = 'TRACK_Z'
-                cons = myplocator.constraints['TrackTo']
-                myplocator.constraints["TrackTo"].target = None
+                myplocator.constraints["Track To"].target = bpy.data.objects["Proyector"]
+                myplocator.constraints["Track To"].up_axis = 'UP_Y'
+                myplocator.constraints["Track To"].track_axis = 'TRACK_Z'
+                cons = myplocator.constraints['Track To']
+                myplocator.constraints["Track To"].target = None
                 myplocator.constraints.remove(cons)            
 
         return{'FINISHED'}
@@ -831,22 +831,22 @@ class UpdateRottCam(bpy.types.Operator):
 
     def execute(self, context):
         if "Proyector" in bpy.data.objects:
-            if 'TrackTo' not in bpy.data.objects['Proyector'].constraints and bpy.data.objects['Proyector'].constraints['ChildOf'].influence == 0:
+            if 'Track To' not in bpy.data.objects['Proyector'].constraints and bpy.data.objects['Proyector'].constraints['Child Of'].influence == 0:
                 bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
                 myproyector = bpy.data.objects["Proyector"]
                 myproyector.select = True
                 bpy.context.scene.objects.active = myproyector # lo hago objeto activo
             
                 bpy.data.objects['Proyector'].constraints.new('TRACK_TO')
-                bpy.data.objects['Proyector'].constraints["TrackTo"].target = bpy.data.objects["Locator"]
-                bpy.data.objects['Proyector'].constraints["TrackTo"].track_axis = 'TRACK_NEGATIVE_Z'
-                bpy.data.objects['Proyector'].constraints["TrackTo"].up_axis = 'UP_Y'
+                bpy.data.objects['Proyector'].constraints["Track To"].target = bpy.data.objects["Locator"]
+                bpy.data.objects['Proyector'].constraints["Track To"].track_axis = 'TRACK_NEGATIVE_Z'
+                bpy.data.objects['Proyector'].constraints["Track To"].up_axis = 'UP_Y'
     
                 bpy.ops.nla.bake(frame_start=1, frame_end=1, step=1, only_selected=True, clear_constraints=True, bake_types={'OBJECT'})
                 bpy.ops.anim.keyframe_clear_v3d()
                 
                 bpy.data.objects['Proyector'].constraints.new('CHILD_OF')
-                bpy.data.objects['Proyector'].constraints['ChildOf'].influence = 0
+                bpy.data.objects['Proyector'].constraints['Child Of'].influence = 0
                 bpy.context.object.constraints['Child Of'].target = bpy.data.objects["Locator"]
                 
              
