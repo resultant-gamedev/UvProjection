@@ -136,11 +136,11 @@ class Botones_UVProjection(bpy.types.Panel):
         # bpy.data.cameras['Camera.001'].name = "jojo"
         # bpy.context.scene.camera.data.name = "grr"
         '''
-        
         col.label("Apply Projections:")
+        subrow0 = col.row(align=True)
         #col.operator("ol.ol", text='(Only) load image to blender')
-        col.operator("toselected.toselected", text='To Selected')
-        col.operator("mod.mod", text='To ALL')
+        subrow0.operator("toselected.toselected", text='To Selected')
+        subrow0.operator("mod.mod", text='To ALL')
         #col.operator("unwrapeado.unwrapeado", text='(Only) Auto UnWrap for all')
         col.operator("uprel.uprel", text='Material //-// Render  -  Update')
 
@@ -162,25 +162,26 @@ class Botones_UVProjection(bpy.types.Panel):
         
         col.label("Objects:")
         # lock unlock:
-        subrow3 = col.row(align=True)
-        subrow3.operator("lock.lock", text='Lock')
-        subrow3.operator("unlock.unlock", text='Unlock')
+        subrow1 = col.row(align=True)
+        subrow1.operator("lock.lock", text='Lock')
+        subrow1.operator("unlock.unlock", text='Unlock')
         # select camera:
         col.operator("selctcam.selctcam", text='Select projector-(camera) ')
 
         # smoothable #############################################################:
         col.label("Smooth Settings:")
-        subrow0 = col.row(align=True)
-        subrow0.operator("smoothable.smoothable", text='Manageable')
-        subrow0.operator("dessmoothable.dessmoothable", text='Unmanageable')
+        subrow2 = col.row(align=True)
+        subrow2.operator("smoothable.smoothable", text='Manageable')
+        subrow2.operator("dessmoothable.dessmoothable", text='Unmanageable')
         col.operator("upsetigs.upsetings", text='Update')
 
-        subrow1 = col.row(align=True)
-        subrow1.operator("allsmooth.allsmooth", text='Subsurf')
-        subrow1.operator("delsmooth.delsmooth", text='Del Subsurfs')
+        subrow3 = col.row(align=True)
+        subrow3.operator("allsmooth.allsmooth", text='Subsurf')
+        subrow3.operator("delsmooth.delsmooth", text='Del Subsurfs')
         
-        col.prop(scn, 'Levelv', toggle=True)
-        col.prop(scn, 'Levelr', toggle=True)
+        subrow4 = col.row(align=True)
+        subrow4.prop(scn, 'Levelv', toggle=True)
+        subrow4.prop(scn, 'Levelr', toggle=True)
         col.prop(scn, 'Typealg', toggle=True)
         
         col.operator("clearsm.clearsm", text='Remove all subsurfs')        
@@ -195,11 +196,10 @@ class Botones_UVProjection(bpy.types.Panel):
         col.prop(scn, 'MatSpecular')
         
         
-        
         # wire:
-        subrow2 = col.row(align=True)
-        subrow2.operator("setwire.setwire", text='Wire On')
-        subrow2.operator("unsetwire.unsetwire", text='Wire Off')
+        subrow5 = col.row(align=True)
+        subrow5.operator("setwire.setwire", text='Wire On')
+        subrow5.operator("unsetwire.unsetwire", text='Wire Off')
         
         # fin smoothable ##########################################################
         
