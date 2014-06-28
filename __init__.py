@@ -166,7 +166,9 @@ class Botones_UVProjection(bpy.types.Panel):
         subrow1.operator("lock.lock", text='Lock')
         subrow1.operator("unlock.unlock", text='Unlock')
         # select camera:
-        col.operator("selctcam.selctcam", text='Select projector-(camera) ')
+        subrow7 = col.row(align=True)
+        subrow7.operator("selctcam.selctcam", text='Select projector')
+        subrow7.operator("selctloc.selctloc", text='Select locator ')
 
         # smoothable #############################################################:
         col.label("Smooth Settings:")
@@ -718,6 +720,19 @@ class SelectCam(bpy.types.Operator):
         if "Proyector" in bpy.data.objects:
             bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
             myprojector = bpy.data.objects["Proyector"]
+            myprojector.select = True
+            bpy.context.scene.objects.active = myprojector # lo hago objeto activo
+        return{'FINISHED'}
+
+class SelectCam(bpy.types.Operator):
+    bl_idname = "selctloc.selctloc"
+    bl_label = "locator - Select"
+    bl_description = "Easy select locator"
+
+    def execute(self, context):
+        if "Locator" in bpy.data.objects:
+            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+            myprojector = bpy.data.objects["Locator"]
             myprojector.select = True
             bpy.context.scene.objects.active = myprojector # lo hago objeto activo
         return{'FINISHED'}
