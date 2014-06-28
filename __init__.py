@@ -175,15 +175,16 @@ class Botones_UVProjection(bpy.types.Panel):
         subrow2 = col.row(align=True)
         subrow2.operator("smoothable.smoothable", text='Manageable')
         subrow2.operator("dessmoothable.dessmoothable", text='Unmanageable')
-        col.operator("upsetigs.upsetings", text='Update')
 
         subrow3 = col.row(align=True)
         subrow3.operator("allsmooth.allsmooth", text='Subsurf')
         subrow3.operator("delsmooth.delsmooth", text='Del Subsurfs')
         
+        col.operator("upsetigs.upsetings", text='Update')
         subrow4 = col.row(align=True)
         subrow4.prop(scn, 'Levelv', toggle=True)
         subrow4.prop(scn, 'Levelr', toggle=True)
+        
         subrow5 = col.row(align=True)
         subrow5.prop(scn, 'Typealg', toggle=True)
         subrow5.prop(scn, 'ODisplay')
