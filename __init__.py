@@ -19,7 +19,7 @@ bl_info = {
     "name": "Automatic UVProjection",
     "description": "Quickly and easy create projects of Camera Mapping",
     "author": "Jorge Hernandez - Melenedez",
-    "version": (1, 9),
+    "version": (2, 0),
     "blender": (2, 71, 0),
     "location": "",
     "warning": "",
