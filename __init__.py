@@ -97,7 +97,8 @@ class Botones_UVProjection(bpy.types.Panel):
         scn = context.scene
         
         # el comodin contiene la imagen actual del loader.
-        comodin = bpy.data.textures.new(type='IMAGE', name='comodin')
+        if not 'comodin' in bpy.data.textures:
+            comodin = bpy.data.textures.new(type='IMAGE', name='comodin')
         
         # intento de hacer un boton de reload addon (pero no tiene mucho sentido crear este boton)
         #col.operator("restarta.restarta", text='Reload Addon')
@@ -719,10 +720,13 @@ class SelectCam(bpy.types.Operator):
 
     def execute(self, context):
         if "Proyector" in bpy.data.objects:
-            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-            myprojector = bpy.data.objects["Proyector"]
-            myprojector.select = True
-            bpy.context.scene.objects.active = myprojector # lo hago objeto activo
+            try:
+                bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+                myprojector = bpy.data.objects["Proyector"]
+                myprojector.select = True
+                bpy.context.scene.objects.active = myprojector # lo hago objeto activo
+            except:
+                pass
         return{'FINISHED'}
 
 class SelectCam(bpy.types.Operator):
@@ -732,10 +736,13 @@ class SelectCam(bpy.types.Operator):
 
     def execute(self, context):
         if "Locator" in bpy.data.objects:
-            bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
-            myprojector = bpy.data.objects["Locator"]
-            myprojector.select = True
-            bpy.context.scene.objects.active = myprojector # lo hago objeto activo
+            try:
+                bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
+                myprojector = bpy.data.objects["Locator"]
+                myprojector.select = True
+                bpy.context.scene.objects.active = myprojector # lo hago objeto activo
+            except:
+                pass
         return{'FINISHED'}
     
 class LockOb(bpy.types.Operator):
