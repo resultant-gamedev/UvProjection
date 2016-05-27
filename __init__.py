@@ -91,8 +91,12 @@ class Botones_UVProjection(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         #layout.label("hola mundo")
-        row = layout.row(align=True)
+
+        # creando cajas para diferenciar areas:
+        box = layout.box()
+        row = box.row()
         col = row.column()
+        
         col.alignment = 'EXPAND'
         scn = context.scene
 
@@ -145,6 +149,11 @@ class Botones_UVProjection(bpy.types.Panel):
         #col.operator("unwrapeado.unwrapeado", text='(Only) Auto UnWrap for all')
         col.operator("uprel.uprel", text='Material //-// Render  -  Update')
 
+        # creando cajas para diferenciar areas:
+        box = layout.box()
+        row = box.row()
+        col = row.column()
+
         col.label("Handlers:")
 
         # para el modo de coordenadas ########################################:
@@ -152,11 +161,9 @@ class Botones_UVProjection(bpy.types.Panel):
         view = context.space_data
         orientation = view.current_orientation
 
-        row = layout.row(align=True)
         col.prop(view, "transform_orientation", text="")
         #col.operator("transform.create_orientation", text="", icon='ZOOMIN')
         if orientation:
-            row = layout.row(align=True)
             col.prop(orientation, "name", text="")
             col.operator("transform.delete_orientation", text="", icon="X")
         # fin modo coordenadas ################################################
@@ -171,8 +178,15 @@ class Botones_UVProjection(bpy.types.Panel):
         subrow7.operator("selctcam.selctcam", text='Select projector')
         subrow7.operator("selctloc.selctloc", text='Select locator ')
 
+
         # smoothable #############################################################:
+        # creando cajas para diferenciar areas:
+        box = layout.box()
+        row = box.row()
+        col = row.column()
+
         col.label("Smooth Settings:")
+
         subrow2 = col.row(align=True)
         subrow2.operator("smoothable.smoothable", text='Manageable')
         subrow2.operator("dessmoothable.dessmoothable", text='Unmanageable')
@@ -208,6 +222,11 @@ class Botones_UVProjection(bpy.types.Panel):
         subrow6.operator("unsetwire.unsetwire", text='Wire Off')
 
         # fin smoothable ##########################################################
+
+        # creando cajas para diferenciar areas:
+        box = layout.box()
+        row = box.row()
+        col = row.column()
 
         col.label("Camera/Locator settings:")
 
