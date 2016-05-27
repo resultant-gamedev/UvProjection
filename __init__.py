@@ -211,8 +211,8 @@ class Botones_UVProjection(bpy.types.Panel):
 
         col.label("Camera/Locator settings:")
 
-        col.operator("updaterot.updaterot", text='Locator  -  Update Orientations')
-        col.operator("updaterotcam.updaterotcam", text='Projector  -  Update Orientations')
+        col.operator("updaterot.updaterot", text='Locator  -  Update Orientations (Need are Disconnected first)')
+        col.operator("updaterotcam.updaterotcam", text='Projector  -  Update Orientations (Need are Disconnected first)')
 
 
         col.operator("influencek.influencek", text='locator  -  Connect')
