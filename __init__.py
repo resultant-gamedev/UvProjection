@@ -1049,13 +1049,13 @@ class AccionToselected(bpy.types.Operator):
     bl_description = "Apply projections to selected objects"
 
     def execute(self, context):
-        bpy.context.scene.render.engine = 'BLENDER_RENDER'
         # capturo el objeto en cuestion:
         ob = bpy.context.selected_objects
 
         if ob:
             img = imagen()
             if img != None:
+                bpy.context.scene.render.engine = 'BLENDER_RENDER'
                 # acciones:
                 p.proyectorcillo(ob)
                 v.vision()
@@ -1087,9 +1087,9 @@ class Accion_ToALL(bpy.types.Operator):
     bl_description = "Apply projections to all objects"
 
     def execute(self, context):
-        bpy.context.scene.render.engine = 'BLENDER_RENDER'
         img = imagen()
         if img != None:
+            bpy.context.scene.render.engine = 'BLENDER_RENDER'
             v.vision()
             for ob in bpy.data.objects:
                 if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
