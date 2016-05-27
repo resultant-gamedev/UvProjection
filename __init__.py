@@ -211,12 +211,10 @@ class Botones_UVProjection(bpy.types.Panel):
 
         col.label("Camera/Locator settings:")
 
+        col.operator("noinfluencek.noinfluencek", text='locator  -  Disconnect')
         col.operator("updaterot.updaterot", text='Locator  -  Update Orientations (Need are Disconnected first)')
         col.operator("updaterotcam.updaterotcam", text='Projector  -  Update Orientations (Need are Disconnected first)')
-
-
         col.operator("influencek.influencek", text='locator  -  Connect')
-        col.operator("noinfluencek.noinfluencek", text='locator  -  Disconnect')
 
         #subrow = col.row(align=True)
         #subrow.operator("influence.influence", text='With influence')
