@@ -20,7 +20,7 @@ bl_info = {
     "description": "Quickly and easy create projects of Camera Mapping",
     "author": "Jorge Hernandez - Melenedez",
     "version": (2, 1),
-    "blender": (2, 76, 0),
+    "blender": (2, 77, 0),
     "location": "",
     "warning": "",
     "wiki_url": "",
