@@ -96,7 +96,7 @@ class Botones_UVProjection(bpy.types.Panel):
         box = layout.box()
         row = box.row()
         col = row.column()
-        
+
         col.alignment = 'EXPAND'
         scn = context.scene
 
@@ -1052,12 +1052,12 @@ class AccionToselected(bpy.types.Operator):
         bpy.context.scene.render.engine = 'BLENDER_RENDER'
         # capturo el objeto en cuestion:
         ob = bpy.context.selected_objects
-        # acciones:
-        p.proyectorcillo(ob)
 
         if ob:
             img = imagen()
             if img != None:
+                # acciones:
+                p.proyectorcillo(ob)
                 v.vision()
                 # si son muchos por eso me lo recorro:
                 for i in range(len(ob)):
