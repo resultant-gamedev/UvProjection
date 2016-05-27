@@ -236,8 +236,8 @@ class Botones_UVProjection(bpy.types.Panel):
         col.label("Camera/Locator settings:")
 
         col.operator("noinfluencek.noinfluencek", text='locator  -  Disconnect')
-        col.operator("updaterot.updaterot", text='Locator  -  Update Orientations (Need are Disconnected first)')
-        col.operator("updaterotcam.updaterotcam", text='Projector  -  Update Orientations (Need are Disconnected first)')
+        col.operator("updaterot.updaterot", text='Locator  -  Update Orientations')
+        col.operator("updaterotcam.updaterotcam", text='Projector  -  Update Orientations')
         col.operator("influencek.influencek", text='locator  -  Connect')
 
         #subrow = col.row(align=True)
@@ -840,7 +840,7 @@ class WireOff(bpy.types.Operator):
 class UpdateRott(bpy.types.Operator):
     bl_idname = "updaterot.updaterot"
     bl_label = "Locator  -  Update Orientations"
-    bl_description = "Update orientation Locator respect Projector"
+    bl_description = "Update orientation Locator respect Projector (Need are Disconnected first)"
 
     def execute(self, context):
         if "Locator" in bpy.data.objects:
@@ -876,7 +876,7 @@ class UpdateRott(bpy.types.Operator):
 class UpdateRottCam(bpy.types.Operator):
     bl_idname = "updaterotcam.updaterotcam"
     bl_label = "Locator  -  Update Orientations"
-    bl_description = "Update orientation Projector respect Locator (use with care!!)"
+    bl_description = "Update orientation Projector respect Locator (use with care!!) (Need are Disconnected first)"
 
     def execute(self, context):
         if "Proyector" in bpy.data.objects:
