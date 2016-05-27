@@ -4,7 +4,7 @@ Automatic UVProjection is oriented to create a fast Camera Mapping projects.
 
 It is not perfect, but it facilitates and improves very much the camera mapping technique in blender.
 
-http://blenderartists.org/forum/showthread.php?240776-addon-Automatic-UVProjection-%28camera-projection%29&p=2676552#post2676552
+http://blenderartists.org/forum/showthread.php?240776-addon-Automatic-UVProjection-(camera-projection)
 
 My tool is similar to this tutorial:
 http://www.digitaltutors.com/tutorial/429-Camera-Projection-in-Maya
