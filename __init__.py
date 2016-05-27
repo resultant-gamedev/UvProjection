@@ -538,6 +538,8 @@ def updatesmooth():
                     nombre = ob.modifiers[donde].name
                     for i in range(len(modificadores)):
                         bpy.ops.object.modifier_move_up(modifier=nombre)
+                else:
+                    myshade(todo[3],ob)
 
     else:
         scn = bpy.context.scene
