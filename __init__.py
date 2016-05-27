@@ -19,8 +19,8 @@ bl_info = {
     "name": "Automatic UVProjection",
     "description": "Quickly and easy create projects of Camera Mapping",
     "author": "Jorge Hernandez - Melenedez",
-    "version": (2, 0),
-    "blender": (2, 71, 0),
+    "version": (2, 1),
+    "blender": (2, 76, 0),
     "location": "",
     "warning": "",
     "wiki_url": "",
@@ -56,13 +56,13 @@ m = material.Material()
 p = proyector.Proyector()
 tc = tipocoordenadas.Tipocoordenadas()
 up = update.Update()
-    
+
 def mySceneProperties():
     # para el listado de objetos esto es necesario:
     # son como propiedades para el item de interfaz:
     bpy.types.Object.Proyector = bpy.props.StringProperty()
     bpy.types.Scene.IBPath = bpy.props.StringProperty(name="", attr="custompath", description="Base Image Path", maxlen= 1024, default="")
-    
+
     # smoothable #########################################################################################:
     bpy.types.Scene.Levelv = bpy.props.IntProperty( name = "Level View", default = 1, min = 0, max = 6)
     bpy.types.Scene.Levelr = bpy.props.IntProperty( name = "Level Render", default = 1, min = 0, max = 6)
@@ -95,37 +95,37 @@ class Botones_UVProjection(bpy.types.Panel):
         col = row.column()
         col.alignment = 'EXPAND'
         scn = context.scene
-        
+
         # el comodin contiene la imagen actual del loader.
         if not 'comodin' in bpy.data.textures:
             comodin = bpy.data.textures.new(type='IMAGE', name='comodin')
-        
+
         # intento de hacer un boton de reload addon (pero no tiene mucho sentido crear este boton)
         #col.operator("restarta.restarta", text='Reload Addon')
-                
+
         #col.operator("object.custom_path")
         #col.prop(context.scene,"IBPath")
-        
+
         col.label("Load Images:")
-        
+
         #Al crear una nueva escena con ctrl + n el addon no se recargaba y el comodin no se volvia a crear, de esta manera si no esta se crea:
         try:
             # primero intento de manera normal:
             comodin = bpy.data.textures[0]
             col.template_image(comodin, "image", comodin.image_user)
-            
+
         except:
             # si da error seguramente es una escena nueva por lo tanto lo creo otra vez:
             if bpy.data.textures[0].name != 'comodin':
                 comodin = bpy.data.textures.new(type='IMAGE', name='comodin')
-                
+
             comodin = bpy.data.textures[0]
             col.template_image(comodin, "image", comodin.image_user)
 
         ''' # Esto lo dejo para futuras versiones  :)
         # listado de objetos en desplegable: en concreto del objeto activo:
         #col.prop(context.scene.objects, "active", text="Proyector? :")
-        
+
         # listado de objetos en la escena:
         # el string Proyector llama una parte creada arriba
         # donde el string cameras puede ir meshes dependiendo de lo que quisieramos :)
@@ -146,7 +146,7 @@ class Botones_UVProjection(bpy.types.Panel):
         col.operator("uprel.uprel", text='Material //-// Render  -  Update')
 
         col.label("Handlers:")
-        
+
         # para el modo de coordenadas ########################################:
         #col.label("Handlers Orientations:")
         view = context.space_data
@@ -160,7 +160,7 @@ class Botones_UVProjection(bpy.types.Panel):
             col.prop(orientation, "name", text="")
             col.operator("transform.delete_orientation", text="", icon="X")
         # fin modo coordenadas ################################################
-        
+
         col.label("Objects:")
         # lock unlock:
         subrow1 = col.row(align=True)
@@ -180,43 +180,44 @@ class Botones_UVProjection(bpy.types.Panel):
         subrow3 = col.row(align=True)
         subrow3.operator("allsmooth.allsmooth", text='Subsurf')
         subrow3.operator("delsmooth.delsmooth", text='Del Subsurfs')
-        
-        col.operator("upsetigs.upsetings", text='Update')
+
+
         subrow4 = col.row(align=True)
         subrow4.prop(scn, 'Levelv', toggle=True)
         subrow4.prop(scn, 'Levelr', toggle=True)
-        
+
         subrow5 = col.row(align=True)
         subrow5.prop(scn, 'Typealg', toggle=True)
         subrow5.prop(scn, 'ODisplay')
-        
+        col.operator("upsetigs.upsetings", text='Update')
+
         col.operator("stosmooth.stosmooth", text='Subsurfs to Manageable')
         col.operator("selsmoothables.selsmoothables", text='Select All Manageables')
-        col.operator("clearsm.clearsm", text='Remove all mngbl & subsrf')        
-        
+        col.operator("clearsm.clearsm", text='Remove all mngbl & subsrf')
+
         col.label("Settings Display:")
         col.prop(scn, 'Soften')
         col.prop(scn, 'shadelessmode')
 
         col.prop(scn, 'MatSpecular')
-        
-        
+
+
         # wire:
         subrow6 = col.row(align=True)
         subrow6.operator("setwire.setwire", text='Wire On')
         subrow6.operator("unsetwire.unsetwire", text='Wire Off')
-        
+
         # fin smoothable ##########################################################
-        
+
         col.label("Camera/Locator settings:")
-        
+
         col.operator("updaterot.updaterot", text='Locator  -  Update Orientations')
         col.operator("updaterotcam.updaterotcam", text='Projector  -  Update Orientations')
-        
-        
+
+
         col.operator("influencek.influencek", text='locator  -  Connect')
         col.operator("noinfluencek.noinfluencek", text='locator  -  Disconnect')
-        
+
         #subrow = col.row(align=True)
         #subrow.operator("influence.influence", text='With influence')
         #subrow.operator("noinfluence.noinfluence", text='Without influence')
@@ -234,18 +235,18 @@ def getsettings():
     scn = bpy.context.scene
     todo = [int(scn.Levelv), int(scn.Levelr), scn.ODisplay, scn.Soften]
     return todo
-    
+
 def myshade(todo,ob):
     if "smoothable" in ob:
         if todo == True:
             bpy.ops.object.shade_smooth()
         else:
-            bpy.ops.object.shade_flat() 
+            bpy.ops.object.shade_flat()
 
 def smoothable():
     if bpy.context.selected_objects:
         for ob in bpy.context.selected_objects:
-            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
                 bpy.ops.object.select_all(action='DESELECT')
                 scn = bpy.context.scene
                 scn.objects.active = ob
@@ -255,11 +256,11 @@ def smoothable():
                 #bpy.context.object["smoothable"] = 1
                 todo = getsettings()
                 myshade(todo[3],ob)
-                bpy.ops.object.select_all(action='DESELECT') 
+                bpy.ops.object.select_all(action='DESELECT')
     else:
         scn = bpy.context.scene
         for ob in bpy.data.scenes[scn.name].objects:
-            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
                 bpy.ops.object.select_all(action='DESELECT')
                 scn = bpy.context.scene
                 scn.objects.active = ob
@@ -270,46 +271,46 @@ def smoothable():
                 todo = getsettings()
                 myshade(todo[3],ob)
                 bpy.ops.object.select_all(action='DESELECT')
-                
+
 def dessmoothable():
     if bpy.context.selected_objects:
         for ob in bpy.context.selected_objects:
-            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
                 bpy.ops.object.select_all(action='DESELECT')
                 scn = bpy.context.scene
                 scn.objects.active = ob
                 ob.select = True
                 bpy.types.Object.smoothable = bpy.props.IntProperty()
-                ob.smoothable = 0         
+                ob.smoothable = 0
                 bpy.ops.wm.properties_remove(data_path="object", property="smoothable")
-                bpy.ops.object.select_all(action='DESELECT') 
+                bpy.ops.object.select_all(action='DESELECT')
     else:
         scn = bpy.context.scene
         for ob in bpy.data.scenes[scn.name].objects:
-            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
                 bpy.ops.object.select_all(action='DESELECT')
                 scn = bpy.context.scene
                 scn.objects.active = ob
                 ob.select = True
                 bpy.types.Object.smoothable = bpy.props.IntProperty()
-                ob.smoothable = 0         
+                ob.smoothable = 0
                 bpy.ops.wm.properties_remove(data_path="object", property="smoothable")
                 bpy.ops.object.select_all(action='DESELECT')
 def delmismooth():
     if bpy.context.selected_objects:
         for ob in bpy.context.selected_objects:
-            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
                 bpy.ops.object.select_all(action='DESELECT')
                 scn = bpy.context.scene
                 scn.objects.active = ob
                 ob.select = True
                 #if ob.get("smoothable") == 1: # vale tanto get, como .propiedad
                 todo = getsettings()
-                
+
                 modificadores = []
                 for mod in ob.modifiers:
                     modificadores.append(mod)
-                    
+
                 if "smoothable" in ob and ob.smoothable == 1:
                     indice = 0
                     existe = False
@@ -320,7 +321,7 @@ def delmismooth():
                         else:
                             existe = False
                         indice += 1
-                        
+
                     if existe:
                         nombre = ob.modifiers[donde].name
                         bpy.ops.object.modifier_remove(modifier=nombre)
@@ -330,18 +331,18 @@ def delmismooth():
     else:
         scn = bpy.context.scene
         for ob in bpy.data.scenes[scn.name].objects:
-            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
                 bpy.ops.object.select_all(action='DESELECT')
                 scn = bpy.context.scene
                 scn.objects.active = ob
                 ob.select = True
                 #if ob.get("smoothable") == 1: # vale tanto get, como .propiedad
                 todo = getsettings()
-                
+
                 modificadores = []
                 for mod in ob.modifiers:
                     modificadores.append(mod)
-                    
+
                 if "smoothable" in ob and ob.smoothable == 1:
                     indice = 0
                     existe = False
@@ -352,28 +353,28 @@ def delmismooth():
                         else:
                             existe = False
                         indice += 1
-                        
+
                     if existe:
                         nombre = ob.modifiers[donde].name
                         bpy.ops.object.modifier_remove(modifier=nombre)
                         #myshade(todo[3],ob)
                         bpy.ops.object.shade_flat()
-                bpy.ops.object.select_all(action='DESELECT') 
+                bpy.ops.object.select_all(action='DESELECT')
 
 def mismooth():
     scn = bpy.context.scene
     todo = getsettings()
     if bpy.context.selected_objects:
         for ob in bpy.context.selected_objects:
-            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
                 bpy.ops.object.select_all(action='DESELECT')
                 scn.objects.active = ob
                 ob.select = True
-            
+
                 modificadores = []
                 for mod in ob.modifiers:
                     modificadores.append(mod)
-                    
+
                 if "smoothable" in ob and ob.smoothable == 1:
                     indice = 0
                     existe = False
@@ -384,7 +385,7 @@ def mismooth():
                         else:
                             existe = False
                         indice += 1
-                
+
                     if not existe:
                         bpy.ops.object.modifier_add(type='SUBSURF')
                         myshade(todo[3],ob)
@@ -395,11 +396,11 @@ def mismooth():
                             ob.modifiers['Subsurf'].subdivision_type = 'SIMPLE'
                         else:
                             ob.modifiers['Subsurf'].subdivision_type = 'CATMULL_CLARK'
-                        
+
                         nombre = 'Subsurf'
                         for i in range(len(modificadores)):
                             bpy.ops.object.modifier_move_up(modifier=nombre)
-                            
+
                     else:
                         myshade(todo[3],ob)
                         ob.modifiers[donde].levels = todo[0]
@@ -409,24 +410,24 @@ def mismooth():
                             ob.modifiers[donde].subdivision_type = 'SIMPLE'
                         else:
                             ob.modifiers[donde].subdivision_type = 'CATMULL_CLARK'
-                            
+
                         nombre = 'Subsurf'
                         for i in range(len(modificadores)):
                             bpy.ops.object.modifier_move_up(modifier=nombre)
-                        
+
                 bpy.ops.object.select_all(action='DESELECT')
     else:
         scn = bpy.context.scene
         for ob in bpy.data.scenes[scn.name].objects:
-            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
                 bpy.ops.object.select_all(action='DESELECT')
                 scn.objects.active = ob
                 ob.select = True
-            
+
                 modificadores = []
                 for mod in ob.modifiers:
                     modificadores.append(mod)
-                    
+
                 if "smoothable" in ob and ob.smoothable == 1:
                     indice = 0
                     existe = False
@@ -437,7 +438,7 @@ def mismooth():
                         else:
                             existe = False
                         indice += 1
-                
+
                     if not existe:
                         bpy.ops.object.modifier_add(type='SUBSURF')
                         myshade(todo[3],ob)
@@ -448,11 +449,11 @@ def mismooth():
                             ob.modifiers['Subsurf'].subdivision_type = 'SIMPLE'
                         else:
                             ob.modifiers['Subsurf'].subdivision_type = 'CATMULL_CLARK'
-                        
+
                         nombre = 'Subsurf'
                         for i in range(len(modificadores)):
                             bpy.ops.object.modifier_move_up(modifier=nombre)
-                            
+
                     else:
                         myshade(todo[3],ob)
                         ob.modifiers[donde].levels = todo[0]
@@ -462,17 +463,17 @@ def mismooth():
                             ob.modifiers[donde].subdivision_type = 'SIMPLE'
                         else:
                             ob.modifiers[donde].subdivision_type = 'CATMULL_CLARK'
-                            
+
                         nombre = 'Subsurf'
                         for i in range(len(modificadores)):
                             bpy.ops.object.modifier_move_up(modifier=nombre)
-                        
+
                 bpy.ops.object.select_all(action='DESELECT')
-                
+
 def updatesmooth():
     scn = bpy.context.scene
     todo = getsettings()
-    
+
     if bpy.context.selected_objects:
         for ob in bpy.context.selected_objects:
             try:
@@ -486,11 +487,11 @@ def updatesmooth():
                     bpy.context.selected_objects[0].material_slots[0].material.use_shadeless = False
             except:
                 pass
-            
+
             modificadores = []
             for mod in ob.modifiers:
                 modificadores.append(mod)
-                
+
             if "smoothable" in ob: # and ob.smoothable == 1:
                 indice = 0
                 existe = False
@@ -501,7 +502,7 @@ def updatesmooth():
                     else:
                         existe = False
                     indice += 1
-            
+
                 if existe:
                     myshade(todo[3],ob)
                     ob.modifiers[donde].levels = todo[0]
@@ -511,15 +512,15 @@ def updatesmooth():
                         ob.modifiers[donde].subdivision_type = 'SIMPLE'
                     else:
                         ob.modifiers[donde].subdivision_type = 'CATMULL_CLARK'
-                        
+
                     nombre = ob.modifiers[donde].name
                     for i in range(len(modificadores)):
                         bpy.ops.object.modifier_move_up(modifier=nombre)
-            
+
     else:
         scn = bpy.context.scene
         for ob in bpy.data.scenes[scn.name].objects:
-            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
                 bpy.ops.object.select_all(action='DESELECT')
                 scn.objects.active = ob
                 ob.select = True
@@ -534,11 +535,11 @@ def updatesmooth():
                         ob.material_slots[0].material.use_shadeless = False
                 except:
                     pass
-            
+
                 modificadores = []
                 for mod in ob.modifiers:
                     modificadores.append(mod)
-                    
+
                 if "smoothable" in ob: # and ob.smoothable == 1:
                     indice = 0
                     existe = False
@@ -549,7 +550,7 @@ def updatesmooth():
                         else:
                             existe = False
                         indice += 1
-                
+
                     if existe:
                         myshade(todo[3],ob)
                         ob.modifiers[donde].levels = todo[0]
@@ -559,26 +560,26 @@ def updatesmooth():
                             ob.modifiers[donde].subdivision_type = 'SIMPLE'
                         else:
                             ob.modifiers[donde].subdivision_type = 'CATMULL_CLARK'
-                            
+
                         nombre = ob.modifiers[donde].name
                         for i in range(len(modificadores)):
                             bpy.ops.object.modifier_move_up(modifier=nombre)
-            
-            bpy.ops.object.select_all(action='DESELECT') 
+
+            bpy.ops.object.select_all(action='DESELECT')
 
 def importar():
     scn = bpy.context.scene
     todo = getsettings()
     for ob in bpy.data.scenes[scn.name].objects:
-        if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+        if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
             bpy.ops.object.select_all(action='DESELECT')
             scn.objects.active = ob
             ob.select = True
-            
+
             modificadores = []
             for mod in ob.modifiers:
                 modificadores.append(mod)
-            
+
             indice = 0
             existe = False
             while (not existe and indice < len(modificadores)):
@@ -588,11 +589,11 @@ def importar():
                 else:
                     existe = False
                 indice += 1
-            
+
             if existe:
                 bpy.types.Object.smoothable = bpy.props.IntProperty()
                 ob.smoothable = 1
-                    
+
                 myshade(todo[3],ob)
                 ob.modifiers[donde].levels = todo[0]
                 ob.modifiers[donde].render_levels = todo[1]
@@ -601,26 +602,26 @@ def importar():
                     ob.modifiers[donde].subdivision_type = 'SIMPLE'
                 else:
                     ob.modifiers[donde].subdivision_type = 'CATMULL_CLARK'
-                
+
                 nombre = ob.modifiers[donde].name
                 for i in range(len(modificadores)):
                     bpy.ops.object.modifier_move_up(modifier=nombre)
-            
-            bpy.ops.object.select_all(action='DESELECT') 
+
+            bpy.ops.object.select_all(action='DESELECT')
 
 def clearsm():
     scn = bpy.context.scene
     for ob in bpy.data.scenes[scn.name].objects:
-        if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+        if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
             bpy.ops.object.select_all(action='DESELECT')
             scn.objects.active = ob
             ob.select = True
             todo = getsettings()
-            
+
             modificadores = []
             for mod in ob.modifiers:
                 modificadores.append(mod)
-                
+
             if "smoothable" in ob and ob.smoothable == 1:
                 indice = 0
                 existe = False
@@ -631,16 +632,16 @@ def clearsm():
                     else:
                         existe = False
                     indice += 1
-                    
+
                 if existe:
                     nombre = ob.modifiers[donde].name
                     bpy.ops.object.modifier_remove(modifier=nombre)
-                
+
                 ob.smoothable = 0
                 bpy.ops.object.shade_flat()
                 bpy.ops.wm.properties_remove(data_path="object", property="smoothable")
-            bpy.ops.object.select_all(action='DESELECT') 
-    
+            bpy.ops.object.select_all(action='DESELECT')
+
 class myclearsm(bpy.types.Operator):
     bl_idname = "clearsm.clearsm"
     bl_label = "Remove all smooths/ables"
@@ -657,14 +658,14 @@ class selsmoothables(bpy.types.Operator):
         scn = bpy.context.scene
         bpy.ops.object.select_all(action='DESELECT')
         for ob in bpy.data.scenes[scn.name].objects:
-            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META': 
+            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
                 if 'smoothable' in ob:
                     myobject = bpy.data.objects[str(ob.name)]
                     myobject.select = True
                     scn.objects.active = myobject
         return{'FINISHED'}
 
-        
+
 class importables(bpy.types.Operator):
     bl_idname = "stosmooth.stosmooth"
     bl_label = "Smooths to Smoothable"
@@ -672,7 +673,7 @@ class importables(bpy.types.Operator):
     def execute(self, context):
         importar()
         return{'FINISHED'}
-        
+
 class smoothables(bpy.types.Operator):
     bl_idname = "smoothable.smoothable"
     bl_label = "Smoothable"
@@ -744,13 +745,13 @@ class SelectCam(bpy.types.Operator):
             except:
                 pass
         return{'FINISHED'}
-    
+
 class LockOb(bpy.types.Operator):
-    bl_idname = "lock.lock"    
+    bl_idname = "lock.lock"
     bl_label = "Lock"
     bl_description = "Lock objects (in selected objects or all)"
     def execute(self, context):
-        
+
         if bpy.context.selected_objects:
             for o in bpy.context.selected_objects:
                 for x in range(len(o.lock_location)):
@@ -767,11 +768,11 @@ class LockOb(bpy.types.Operator):
         return{'FINISHED'}
 
 class UnLockOb(bpy.types.Operator):
-    bl_idname = "unlock.unlock"    
+    bl_idname = "unlock.unlock"
     bl_label = "Lock"
     bl_description = "UnLock objects (in selected objects or all)"
     def execute(self, context):
-        
+
         if bpy.context.selected_objects:
             for o in bpy.context.selected_objects:
                 for x in range(len(o.lock_location)):
@@ -786,9 +787,9 @@ class UnLockOb(bpy.types.Operator):
                     o.lock_scale[x] = False
 
         return{'FINISHED'}
-    
+
 class WireOn(bpy.types.Operator):
-    bl_idname = "setwire.setwire"    
+    bl_idname = "setwire.setwire"
     bl_label = "Set wireframe mode On"
     bl_description = "Set wireframe mode On (in selected objects or all)"
     def execute(self, context):
@@ -804,7 +805,7 @@ class WireOff(bpy.types.Operator):
     bl_idname = "unsetwire.unsetwire"
     bl_label = "UnSet wireframe mode Off"
     bl_description = "Set wireframe mode Off (in selected objects or all)"
-    
+
     def execute(self, context):
         if bpy.context.selected_objects:
             for o in bpy.context.selected_objects:
@@ -813,7 +814,7 @@ class WireOff(bpy.types.Operator):
             for o in bpy.data.objects:
                 o.show_wire = False
         return{'FINISHED'}
-        
+
 class UpdateRott(bpy.types.Operator):
     bl_idname = "updaterot.updaterot"
     bl_label = "Locator  -  Update Orientations"
@@ -821,6 +822,7 @@ class UpdateRott(bpy.types.Operator):
 
     def execute(self, context):
         if "Locator" in bpy.data.objects:
+            # tiene que estas desvinculado el child of (Disconnected):
             if bpy.data.objects['Proyector'].constraints['Child Of'].influence == 0:
                 bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
                 myplocator = bpy.data.objects["Locator"]
@@ -828,25 +830,27 @@ class UpdateRott(bpy.types.Operator):
                 bpy.context.scene.objects.active = myplocator # lo hago objeto activo
 
                 myplocator.constraints.new('TRACK_TO')
+
                 myplocator.constraints["Track To"].target = bpy.data.objects["Proyector"]
                 myplocator.constraints["Track To"].up_axis = 'UP_Y'
                 myplocator.constraints["Track To"].track_axis = 'TRACK_Z'
-                
-                bpy.ops.nla.bake(frame_start=1, frame_end=1, step=1, only_selected=True, clear_constraints=True, bake_types={'OBJECT'})
-                bpy.ops.anim.keyframe_clear_v3d()
-                
+
+                bpy.ops.object.visual_transform_apply()
+                #bpy.ops.nla.bake(frame_start=1, frame_end=1, step=1, only_selected=True, clear_constraints=True, bake_types={'OBJECT'})
+                #bpy.ops.anim.keyframe_clear_v3d()
+
                 # chapuza para q luego el conector vuelva a funcionar juassss
-                myplocator.constraints.new('TRACK_TO')
-                myplocator.constraints["Track To"].target = bpy.data.objects["Proyector"]
-                myplocator.constraints["Track To"].up_axis = 'UP_Y'
-                myplocator.constraints["Track To"].track_axis = 'TRACK_Z'
+                # myplocator.constraints.new('TRACK_TO')
+                # myplocator.constraints["Track To"].target = bpy.data.objects["Proyector"]
+                # myplocator.constraints["Track To"].up_axis = 'UP_Y'
+                # myplocator.constraints["Track To"].track_axis = 'TRACK_Z'
                 cons = myplocator.constraints['Track To']
-                myplocator.constraints["Track To"].target = None
-                myplocator.constraints.remove(cons)            
+                # myplocator.constraints["Track To"].target = None
+                myplocator.constraints.remove(cons)
 
         return{'FINISHED'}
-        
-        
+
+
 class UpdateRottCam(bpy.types.Operator):
     bl_idname = "updaterotcam.updaterotcam"
     bl_label = "Locator  -  Update Orientations"
@@ -854,27 +858,28 @@ class UpdateRottCam(bpy.types.Operator):
 
     def execute(self, context):
         if "Proyector" in bpy.data.objects:
+            # tiene que estas desvinculado el child of (Disconnected):
             if 'Track To' not in bpy.data.objects['Proyector'].constraints and bpy.data.objects['Proyector'].constraints['Child Of'].influence == 0:
                 bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
                 myproyector = bpy.data.objects["Proyector"]
                 myproyector.select = True
                 bpy.context.scene.objects.active = myproyector # lo hago objeto activo
-            
+
                 bpy.data.objects['Proyector'].constraints.new('TRACK_TO')
                 bpy.data.objects['Proyector'].constraints["Track To"].target = bpy.data.objects["Locator"]
                 bpy.data.objects['Proyector'].constraints["Track To"].track_axis = 'TRACK_NEGATIVE_Z'
                 bpy.data.objects['Proyector'].constraints["Track To"].up_axis = 'UP_Y'
-    
-                bpy.ops.nla.bake(frame_start=1, frame_end=1, step=1, only_selected=True, clear_constraints=True, bake_types={'OBJECT'})
-                bpy.ops.anim.keyframe_clear_v3d()
-                
-                bpy.data.objects['Proyector'].constraints.new('CHILD_OF')
-                bpy.data.objects['Proyector'].constraints['Child Of'].influence = 0
-                bpy.context.object.constraints['Child Of'].target = bpy.data.objects["Locator"]
-                
-             
+
+                bpy.ops.object.visual_transform_apply()
+                #bpy.ops.nla.bake(frame_start=1, frame_end=1, step=1, only_selected=True, clear_constraints=True, bake_types={'OBJECT'})
+                #bpy.ops.anim.keyframe_clear_v3d()
+
+                #bpy.data.objects['Proyector'].constraints.new('CHILD_OF')
+                #bpy.data.objects['Proyector'].constraints['Child Of'].influence = 0
+                #bpy.context.object.constraints['Child Of'].target = bpy.data.objects["Locator"]
+
         return{'FINISHED'}
-    
+
 class Influence(bpy.types.Operator):
     bl_idname = "influence.influence"
     bl_label = "With influence"
@@ -915,7 +920,7 @@ class InfluenceK(bpy.types.Operator):
     bl_description = "The projector will influence the locator and projector(camera) maintain the current position"
 
     def execute(self, context):
-        if "Locator" in bpy.data.objects:        
+        if "Locator" in bpy.data.objects:
             bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
             camara = bpy.data.objects['Proyector']
             camara.select = True # la selecciono
@@ -925,24 +930,24 @@ class InfluenceK(bpy.types.Operator):
                 coordenadas = [coordenada.x,coordenada.y,coordenada.z]
                 bpy.context.object.constraints['Child Of'].influence = 1
                 bpy.data.objects['Proyector'].matrix_world.translation = coordenadas
-                
+
 
                 #original_type = bpy.context.area.type
                 #bpy.context.area.type = "PROPERTIES"
                 #bpy.context.space_data.context = 'CONSTRAINT'
-                
+
                 # clear inverse
                 #bpy.context.object.constraints['Child Of'].inverse_matrix = Matrix() # 4x4 Unit/identity matrix
                 # set inverse
                 bpy.context.object.constraints['Child Of'].inverse_matrix = bpy.context.object.constraints['Child Of'].target.matrix_world.inverted() # is matrix_world really correct?
                 #bpy.ops.constraint.childof_set_inverse(constraint="Child Of", owner='OBJECT') # <-- no se por que este no va.
-                
+
                 #bpy.context.area.type = original_type
-                
+
                 #influencia = bpy.context.object.constraints['Child Of'].influence #<- truco para q refreske
                 #bpy.context.object.constraints['Child Of'].influence = influencia+1 #<- truco para q refreske
                 #bpy.context.object.constraints['Child Of'].influence = influencia #<- truco para q refreske
-                
+
                 bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
                 locator = bpy.data.objects["Locator"]
                 locator.select = True # la selecciono
@@ -950,14 +955,14 @@ class InfluenceK(bpy.types.Operator):
             except:
                 pass
         return{'FINISHED'}
-        
+
 class NoInfluencek(bpy.types.Operator):
     bl_idname = "noinfluencek.noinfluencek"
     bl_label = "Without influence Keep position"
     bl_description = "The projector will not influence the locator and projector(camera) maintain the current position"
-    
+
     def execute(self, context):
-        if "Locator" in bpy.data.objects:        
+        if "Locator" in bpy.data.objects:
             bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
             camara = bpy.data.objects["Proyector"]
             camara.select = True # la selecciono
@@ -971,7 +976,7 @@ class NoInfluencek(bpy.types.Operator):
                 #bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
                 locator.select = True # la selecciono
                 bpy.context.scene.objects.active = locator
-                
+
                 bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
                 locator = bpy.data.objects["Locator"]
                 locator.select = True # la selecciono
@@ -979,7 +984,7 @@ class NoInfluencek(bpy.types.Operator):
             except:
                 pass
         return{'FINISHED'}
-    
+
 class Inverse(bpy.types.Operator):
     bl_idname = "setinverse.setinverse"
     bl_label = "Set inverse"
@@ -999,12 +1004,12 @@ class Inverse(bpy.types.Operator):
         except:
             pass
         return{'FINISHED'}
-        
+
 class ClearInverse(bpy.types.Operator):
     bl_idname = "clearinverse.clearinverse"
     bl_label = "Clear inverse"
     bl_description = "Dont Inverse influence from locator"
-    
+
     def execute(self, context):
         bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todo
         camara = bpy.data.objects["Proyector"]
@@ -1019,73 +1024,79 @@ class ClearInverse(bpy.types.Operator):
         except:
             pass
         return{'FINISHED'}
-    
-        
+
+
 class AccionToselected(bpy.types.Operator):
     bl_idname = "toselected.toselected"
     bl_label = "To Selected"
     bl_description = "Apply projections to selected objects"
-    
+
     def execute(self, context):
+        bpy.context.scene.render.engine = 'BLENDER_RENDER'
         # capturo el objeto en cuestion:
         ob = bpy.context.selected_objects
         # acciones:
         p.proyectorcillo(ob)
-                
-        if ob:        
+
+        if ob:
             img = imagen()
-            v.vision()
-            # si son muchos por eso me lo recorro:
-            for i in range(len(ob)):
-                if ob[i].type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
-                    sobject = ob[i]
-                    # selecciono el objeto correspondiente a esa pasada:
-                    sobject.select = True
+            if img != None:
+                v.vision()
+                # si son muchos por eso me lo recorro:
+                for i in range(len(ob)):
+                    if ob[i].type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
+                        sobject = ob[i]
+                        # selecciono el objeto correspondiente a esa pasada:
+                        sobject.select = True
 
-                    # hago las acciones:
-                    u.unwraping(sobject)
-                    # uvmod requiere de la imagen se la paso por argumentos:
-                    um.uvmod(sobject,img)
-                    m.trymat(sobject,img)
+                        # hago las acciones:
+                        u.unwraping(sobject)
+                        # uvmod requiere de la imagen se la paso por argumentos:
+                        um.uvmod(sobject,img)
+                        m.trymat(sobject,img)
 
-                    # le seteamos las coordenadas de tipo de mapeo:
-                    tc.uvgenerated(sobject) # este setea en las coordenadas de textura que use uv
-                    # actualizamos las relaciones:
-                    up.update(ob)
-                    
+                        # le seteamos las coordenadas de tipo de mapeo:
+                        tc.uvgenerated(sobject) # este setea en las coordenadas de textura que use uv
+                        # actualizamos las relaciones:
+                        up.update(ob)
+            else:
+                self.report({'WARNING'}, "Invalid Image")
+
         return{'FINISHED'}
-        
+
 class Accion_ToALL(bpy.types.Operator):
     bl_idname = "mod.mod"
     bl_label = "Apply/Update Modifier"
     bl_description = "Apply projections to all objects"
 
     def execute(self, context):
-
+        bpy.context.scene.render.engine = 'BLENDER_RENDER'
         img = imagen()
-        v.vision()
-        for ob in bpy.data.objects:
-            if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
-                p.proyectorcillo(ob)         
-                
-                # hago las acciones:
-                u.unwraping(ob)
-                # uvmod requiere de la imagen se la paso por argumentos:
-                um.uvmod(ob,img)
-                m.trymat(ob,img)
+        if img != None:
+            v.vision()
+            for ob in bpy.data.objects:
+                if ob.type == 'MESH' or ob.type == 'SURFACE' or ob.type == 'META':
+                    p.proyectorcillo(ob)
 
-                # le seteamos las coordenadas de tipo de mapeo:
-                tc.uvgenerated(ob)
-                # actualizamos las relaciones:
-                up.update(ob)
-    
+                    # hago las acciones:
+                    u.unwraping(ob)
+                    # uvmod requiere de la imagen se la paso por argumentos:
+                    um.uvmod(ob,img)
+                    m.trymat(ob,img)
+
+                    # le seteamos las coordenadas de tipo de mapeo:
+                    tc.uvgenerated(ob)
+                    # actualizamos las relaciones:
+                    up.update(ob)
+        else:
+            self.report({'WARNING'}, "Invalid Image")
         return{'FINISHED'}
-    
+
 class RELATIONS(bpy.types.Operator):
     bl_idname = "uprel.uprel"
     bl_label = "Update Relationship Material Modifier - Material Renderable"
     bl_description = "Only Update Relationship Material Modifier - Material Renderable"
-    
+
     def execute(self, context):
         ob = bpy.context.active_object
         for ob in bpy.data.objects:
